@@ -9,13 +9,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
 import { Loader } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import usePostQuery from "@/hooks/usePostQuery";
+import { useAuth } from "@/hooks/useAuth";
 
 const Register = () => {
+  const { login } = useAuth();
+  const [searchParams] = useSearchParams();
   const { mutate, isPending, isError, error } = usePostQuery(
     "/api/users/register"
   );
@@ -27,7 +30,14 @@ const Register = () => {
   });
 
   const onhandleRegsiter = () => {
-    mutate({ ...userDetails });
+    mutate(
+      { ...userDetails },
+      {
+        onSuccess: (data) => {
+          login(data, searchParams.get("redirect") || undefined);
+        },
+      }
+    );
   };
 
   const onhandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +48,7 @@ const Register = () => {
     });
   };
 
-  const onhandleGoogle = () => {};
+  // const onhandleGoogle = () => {};
 
   return (
     <div className="flex items-center justify-center h-screen">
@@ -97,14 +107,14 @@ const Register = () => {
               * {error?.message}
             </p>
           )}
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <Separator className={cn("flex-1")} />
             <p className="px-4 text-slate-400">or</p>
             <Separator className={cn("flex-1")} />
           </div>
           <Button onClick={onhandleGoogle} variant="outline" className="w-full">
             Continue with Google
-          </Button>
+          </Button> */}
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
             <Link to={"/login"} className="underline">

@@ -1,0 +1,37 @@
+{
+  "name": "chai-backend",
+  "version": "1.0.0",
+  "description": "a backend at chai aur code channel - youtube",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/server.js",
+    "start": "npm -r dotenv/config --experimental-json-modules src/server.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
+  },
+  "keywords": [
+    "javascript",
+    "backend",
+    "chai"
+  ],
+  "author": "Mitej Madan",
+  "license": "ISC",
+  "devDependencies": {
+    "drizzle-kit": "^0.22.1",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.31.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "postgres": "^3.4.4",
+    "qs": "^6.12.1"
+  }
+}

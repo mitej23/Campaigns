@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -13,12 +13,12 @@ const Sidebar = () => {
       path: "/dashboard",
       icon: <LayoutDashboard size={20} className="mr-4 h-4 w-4" />,
     },
-    {
-      id: 2,
-      name: "Settings",
-      path: "/settings",
-      icon: <Settings size={20} className="mr-4 h-4 w-4" />,
-    },
+    // {
+    //   id: 2,
+    //   name: "Settings",
+    //   path: "/settings",
+    //   icon: <Settings size={20} className="mr-4 h-4 w-4" />,
+    // },
   ];
 
   const handleLogout = () => {
@@ -27,7 +27,7 @@ const Sidebar = () => {
 
   return (
     <div className="flex flex-col bg-gray-50 h-screen w-[220px] border-r fixed">
-      <h1 className="text-3xl font-semibold text-center mt-8">Board.ly</h1>
+      <h1 className="text-3xl font-semibold text-center mt-8">Campaigns</h1>
       <div className="flex flex-col mt-8 gap-1 flex-1 mb-4">
         {links.map(({ id, name, path, icon }) => {
           return (

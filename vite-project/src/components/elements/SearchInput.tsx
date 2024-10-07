@@ -14,7 +14,7 @@ const SearchInput: React.FC<SearchInputParams> = ({ query, setQuery }) => {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search Boards..."
+        placeholder="Search Campaigns..."
         className="pl-12 w-[25rem]"
       />
     </div>

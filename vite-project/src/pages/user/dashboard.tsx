@@ -30,7 +30,7 @@ const Dashboard = () => {
 
   return (
     <DasboardLayout>
-      <h1 className="text-2xl font-semibold mb-6">Boards</h1>
+      <h1 className="text-2xl font-semibold mb-6">Your Campaigns</h1>
       <div className="flex flex-row items-center justify-between">
         <SearchInput query={query} setQuery={handleSearchInput} />
         {/* using math.random on key will not persist the previously enter data in the modal -- Mitej Madan  */}
@@ -38,7 +38,7 @@ const Dashboard = () => {
           size={"sm"}
           // onClick={() => setOpen(<CreateBoard key={Math.random()} />)}
         >
-          Create Board
+          Create Campaign
         </Button>
       </div>
       {/* eslint-disable-next-line no-constant-condition */}
@@ -78,10 +78,11 @@ const Dashboard = () => {
             <>
               <div className="flex h-[25rem] flex-col items-center justify-center">
                 <h1 className="text-xl font-semibold">
-                  Oops !!! No board Found.
+                  Oops !!! No campaign Found.
                 </h1>
                 <p className="text-sm text-slate-600 my-2 mb-4">
-                  Press the "Create Board" button to create your first board
+                  Press the "Create Campaign" button to create your first
+                  campaign
                 </p>
               </div>
             </>

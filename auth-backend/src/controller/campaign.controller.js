@@ -2,6 +2,28 @@ import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { campaigns, users } from "../db/schema.js";
 
+const getAllCampaigns = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const allCampaigns = await db.select().from(campaigns).where(eq(campaigns.userId, id))
+
+    console.log(allCampaigns)
+
+    return res
+      .status(200)
+      .json({ message: 'List of all campaigns.', data: allCampaigns });
+
+
+  } catch (error) {
+    console.log(error)
+
+    return res
+      .status(500)
+      .json({ error: 'Internal server error' });
+  }
+}
+
 const addCampaign = async (req, res) => {
   try {
     const { name } = req.body;
@@ -60,4 +82,4 @@ const updateCampaign = async (req, res) => {
 
 
 
-export { addCampaign, updateCampaign }
+export { getAllCampaigns, addCampaign, updateCampaign }

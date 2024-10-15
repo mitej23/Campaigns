@@ -43,6 +43,13 @@
       "when": 1728332385714,
       "tag": "0005_dear_lake",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1729024227230,
+      "tag": "0006_majestic_proudstar",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,19 @@ export const users = pgTable('users', {
   // Add other fields necessary for JWT authentication if needed
 });
 
+export const emailAccounts = pgTable('email_accounts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  emailId: text('email_id').notNull(),
+  status: text('status').notNull(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => {
+  return {
+    userNameIdx: uniqueIndex('user_id_email_id_idx').on(table.userId, table.emailId),
+  }
+})
+
 export const campaignUsers = pgTable('campaign_users', {
   id: uuid('id').primaryKey(),
   name: text('name').notNull(),
@@ -21,6 +34,7 @@ export const campaignUsers = pgTable('campaign_users', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// each campaign should contain the email account i.e sender email id
 export const campaigns = pgTable('campaigns', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),

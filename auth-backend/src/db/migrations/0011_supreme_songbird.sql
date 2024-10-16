@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "contact_user_email_idx" ON "contacts" USING btree (email,user_id);

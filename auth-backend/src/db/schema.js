@@ -25,13 +25,17 @@ export const emailAccounts = pgTable('email_accounts', {
   }
 })
 
-export const campaignUsers = pgTable('campaign_users', {
-  id: uuid('id').primaryKey(),
+export const contacts = pgTable('contacts', {
+  id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),
   email: text('email').notNull(),
   usersId: uuid('user_id').notNull().references(() => users.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => {
+  return {
+    contactUserEmailIdx: uniqueIndex('contact_user_email_idx').on(table.email, table.usersId)
+  }
 });
 
 // each campaign should contain the email account i.e sender email id
@@ -49,10 +53,11 @@ export const campaigns = pgTable('campaigns', {
   }
 });
 
-export const userCampaign = pgTable('user_campaign', {
-  id: uuid('id').primaryKey(),
-  campaignUserId: uuid('campaign_user_id').notNull().references(() => campaignUsers.id),
+export const campaignContact = pgTable('campaign_contact', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  contactId: uuid('contact_id').notNull().references(() => contacts.id),
   campaignId: uuid('campaign_id').notNull().references(() => campaigns.id),
+  userId: uuid('user_id').notNull().references(() => users.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
@@ -83,8 +88,8 @@ export const emails = pgTable('emails', {
 });
 
 export const emailQueue = pgTable('email_queue', {
-  id: uuid('id').primaryKey(),
-  campaignUserId: uuid('campaign_user_id').notNull().references(() => campaignUsers.id),
+  id: uuid('id').defaultRandom().primaryKey(),
+  contactId: uuid('contact_id').notNull().references(() => contacts.id),
   emailId: uuid('email_id').notNull().references(() => emails.id),
   scheduledTime: timestamp('scheduled_time').notNull(),
   status: text('status').notNull(),
@@ -93,7 +98,7 @@ export const emailQueue = pgTable('email_queue', {
 });
 
 export const emailConditions = pgTable('email_conditions', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   emailId: uuid('email_id').notNull().references(() => emails.id),
   conditionType: text('condition_type').notNull(),
   trueEmailId: uuid('true_email_id').references(() => emails.id),
@@ -106,8 +111,8 @@ export const emailConditions = pgTable('email_conditions', {
 
 // Email Send Queue Table
 export const emailSendQueue = pgTable('email_send_queue', {
-  id: uuid('id').primaryKey(),
-  campaignUserId: uuid('campaign_user_id').notNull().references(() => campaignUsers.id),
+  id: uuid('id').defaultRandom().primaryKey(),
+  contactId: uuid('contact_id').notNull().references(() => contacts.id),
   emailId: uuid('email_id').notNull().references(() => emails.id),
   sendTime: timestamp('send_time').notNull(),
   status: text('status').notNull(),
@@ -117,8 +122,8 @@ export const emailSendQueue = pgTable('email_send_queue', {
 
 // Email Opens Table
 export const emailOpens = pgTable('email_opens', {
-  id: uuid('id').primaryKey(),
-  campaignUserId: uuid('campaign_user_id').notNull().references(() => campaignUsers.id),
+  id: uuid('id').defaultRandom().primaryKey(),
+  contactId: uuid('contact_id').notNull().references(() => contacts.id),
   emailId: uuid('email_id').notNull().references(() => emails.id),
   openedAt: timestamp('opened_at').defaultNow(),
   createdAt: timestamp('created_at').defaultNow(),

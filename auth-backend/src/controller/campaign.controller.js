@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
-import { campaigns, emailAccounts, users } from "../db/schema.js";
+import { campaignContact, campaigns, emailAccounts } from "../db/schema.js";
 
 const getAllCampaigns = async (req, res) => {
   try {
@@ -57,13 +57,14 @@ const addCampaign = async (req, res) => {
   }
 }
 
-
 const updateCampaign = async (req, res) => {
   try {
     const { name, campaignId } = req.body;
+    const { id } = req.user;
 
     const [updatedCampaign] = await db.update(campaigns)
       .set({ name })
+      .where(eq(campaigns.userId, id))
       .where(eq(campaigns.id, campaignId))
       .returning();
 
@@ -91,5 +92,57 @@ const publishCampaign = async (req, res) => {
 }
 
 
+const addContact = async (req, res) => {
+  try {
+    const { contactId, campaignId } = req.body
+    const { id } = req.user;
 
-export { getAllCampaigns, addCampaign, updateCampaign }
+    const [contactCampaign] = await db.insert(campaignContact).values({
+      contactId,
+      campaignId,
+      userId: id
+    }).returning();
+
+    return res
+      .status(201)
+      .json({ message: 'Contact added to campaign successfully', contactCampaign });
+
+
+
+  } catch (error) {
+    console.log(error)
+
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+const removeContact = async (req, res) => {
+  try {
+    const { campaignContactId } = req.body
+    const { id } = req.user;
+
+    const [contactCampaignDeleted] = await db
+      .delete(campaignContact)
+      .where(eq(campaignContact.userId, id))
+      .where(eq(campaignContact.id, campaignContactId))
+      .returning();
+
+    if (!contactCampaignDeleted) {
+      return res.status(409).json({ error: 'Contact not found inside the campaign' });
+    }
+
+    return res
+      .status(201)
+      .json({ message: 'Contact removed from the campaign successfully', contactCampaignDeleted });
+
+
+
+  } catch (error) {
+    console.log(error)
+
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+
+export { getAllCampaigns, addCampaign, updateCampaign, addContact, removeContact }

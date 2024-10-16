@@ -21,11 +21,13 @@ import userRoutes from "./routes/user.routes.js"
 import emailAccountRoutes from "./routes/email_accounts.routes.js"
 import campaignRoutes from "./routes/campaign.routes.js"
 import emailTemplateRoutes from "./routes/email_template.routes.js"
+import contactsRoutes from "./routes/contacts.routes.js"
 
 app.use("/api/users", userRoutes)
 app.use("/api/user-email-accounts", emailAccountRoutes)
 app.use("/api/campaigns", campaignRoutes)
 app.use("/api/email-template", emailTemplateRoutes)
+app.use("/api/contacts", contactsRoutes)
 
 
 export { app }

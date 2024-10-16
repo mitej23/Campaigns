@@ -50,6 +50,20 @@
       "when": 1729024227230,
       "tag": "0006_majestic_proudstar",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1729072370363,
+      "tag": "0007_natural_magma",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1729109085333,
+      "tag": "0008_serious_grey_gargoyle",
+      "breakpoints": true
     }
   ]
 }

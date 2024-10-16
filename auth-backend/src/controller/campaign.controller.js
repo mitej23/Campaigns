@@ -1,14 +1,16 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
-import { campaigns, users } from "../db/schema.js";
+import { campaigns, emailAccounts, users } from "../db/schema.js";
 
 const getAllCampaigns = async (req, res) => {
   try {
     const { id } = req.user;
 
-    const allCampaigns = await db.select().from(campaigns).where(eq(campaigns.userId, id))
-
-    console.log(allCampaigns)
+    const allCampaigns = await db
+      .select()
+      .from(campaigns)
+      .leftJoin(emailAccounts, eq(emailAccounts.id, campaigns.emailAccountsId))
+      .where(eq(campaigns.userId, id))
 
     return res
       .status(200)
@@ -24,13 +26,16 @@ const getAllCampaigns = async (req, res) => {
   }
 }
 
+// allow user to add email which is not verified
 const addCampaign = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, emailAccountsId } = req.body;
     const { id } = req.user;
 
     const [campaign] = await db.insert(campaigns).values({
       name,
+      status: 'Unpublished',
+      emailAccountsId,
       userId: id
     }).returning();
 
@@ -78,6 +83,11 @@ const updateCampaign = async (req, res) => {
 
     res.status(500).json({ error: 'Internal server error' });
   }
+}
+
+const publishCampaign = async (req, res) => {
+  // check firstly whether the campaign emailAccountId is verified
+  // check whether it is not already published.
 }
 
 

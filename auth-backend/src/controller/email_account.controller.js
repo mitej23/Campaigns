@@ -66,8 +66,6 @@ const checkAllEmailStatuses = async (req, res) => {
 		});
 		const response = await sesClient.send(command);
 
-		console.log(response)
-
 		const updatedStatuses = [];
 
 		for (const account of userAccounts) {

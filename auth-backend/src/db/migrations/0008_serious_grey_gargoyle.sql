@@ -1,0 +1,1 @@
+ALTER TABLE "campaigns" ADD COLUMN "status" text NOT NULL;

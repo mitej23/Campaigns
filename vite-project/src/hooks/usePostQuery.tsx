@@ -11,6 +11,7 @@ const usePostQuery = (url: string) => {
         },
         body: JSON.stringify(data),
         redirect: "follow" as RequestRedirect,
+        credentials: "include",
       };
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}${url}`,

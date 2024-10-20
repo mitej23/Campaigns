@@ -12,9 +12,10 @@ import Register from "./pages/auth/register";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "./components/ui/toaster";
-import Dashboard from "./pages/user/dashboard";
+import Dashboard from "./pages/user/dashboard/dashboard";
 import ProtectedRoutes from "./components/layout/ProtectedRoutes";
 import AuthRoutes from "./components/layout/AuthRoutes";
+import Accounts from "./pages/user/accounts/accounts";
 
 export const UNAUTHORIZED_EVENT = "unauthorized_error";
 const handleError = (error: any) => {
@@ -52,6 +53,7 @@ function App() {
               <Route path="/" element={<h1>Landing Page</h1>} />
               <Route element={<ProtectedRoutes />}>
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/accounts" element={<Accounts />} />
               </Route>
               <Route element={<AuthRoutes />}>
                 <Route path="/register" element={<Register />} />

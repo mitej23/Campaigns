@@ -13,6 +13,12 @@ const Sidebar = () => {
       path: "/dashboard",
       icon: <LayoutDashboard size={20} className="mr-4 h-4 w-4" />,
     },
+    {
+      id: 1,
+      name: "Accounts",
+      path: "/accounts",
+      icon: <LayoutDashboard size={20} className="mr-4 h-4 w-4" />,
+    },
     // {
     //   id: 2,
     //   name: "Settings",

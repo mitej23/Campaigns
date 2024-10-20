@@ -6,6 +6,13 @@ import bcrypt from 'bcrypt'
 import { generateAccessToken, generateRefreshToken } from "../utils/tokenGenerator.js";
 import { getGoogleOAuthTokens, getGoogleUser } from "../utils/googleAuth.js";
 
+const options = {
+  httpOnly: true,
+  secure: false, // Add this line
+  sameSite: 'lax',
+  path: '/'
+}
+
 // get user id of the user and teh n only return back inside the token.
 const registerUser = async (req, res) => {
   try {
@@ -23,12 +30,6 @@ const registerUser = async (req, res) => {
     // create user
     let tempUser = { email, name }
     const hashedPassword = await bcrypt.hash(password, 10);
-
-
-    const options = {
-      httpOnly: true,
-      secure: true
-    }
 
     const result = await db.insert(users).values({ ...tempUser, password: hashedPassword, }).returning()
     const refreshToken = await generateRefreshToken({ ...tempUser, id: result[0].id })
@@ -55,8 +56,6 @@ const registerUser = async (req, res) => {
     console.log(error)
     return res.status(500).json({ message: 'Internal server error' });
   }
-
-
 }
 
 const loginUser = async (req, res) => {
@@ -80,10 +79,6 @@ const loginUser = async (req, res) => {
     const refreshToken = await generateRefreshToken({ id: user.id, name: user.name, email: user.email })
     const accessToken = await generateAccessToken({ id: user.id, name: user.name, email: user.email });
 
-    const options = {
-      httpOnly: true,
-      secure: true
-    }
 
     const result = await db
       .update(users)
@@ -116,10 +111,7 @@ const logoutUser = async (req, res) => {
       return res.status(500).json({ message: 'Internal server error' });
     });
 
-    const options = {
-      httpOnly: true,
-      secure: true
-    }
+
     return res
       .clearCookie("accessToken", options)
       .clearCookie("refreshToken", options)
@@ -160,10 +152,6 @@ const refreshAccessToken = async (req, res) => {
     const refreshToken = await generateRefreshToken({ ...user })
     const accessToken = await generateAccessToken({ ...user });
 
-    const options = {
-      httpOnly: true,
-      secure: true
-    }
 
     const result = await db
       .update(users)
@@ -230,12 +218,6 @@ const googleOAuthHandler = async (req, res) => {
         name: users.name,
         email: users.email
       })
-
-
-    const options = {
-      httpOnly: true,
-      secure: true
-    }
 
     return res
       .cookie("accessToken", accessToken, options)

@@ -30,6 +30,12 @@ const addContact = async (req, res) => {
 		const { name, email } = req.body
 		const { id } = req.user;
 
+		if (name === "" || email === "") {
+			return res
+				.status(204)
+				.json({ message: 'Name or Email Id cannot be empty' });
+		}
+
 		const existingContact = await db
 			.select()
 			.from(contacts)

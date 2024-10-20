@@ -1,4 +1,4 @@
-import { LayoutDashboard } from "lucide-react";
+import { AtSign, LayoutDashboard, User } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,17 +14,17 @@ const Sidebar = () => {
       icon: <LayoutDashboard size={20} className="mr-4 h-4 w-4" />,
     },
     {
-      id: 1,
+      id: 2,
       name: "Accounts",
       path: "/accounts",
-      icon: <LayoutDashboard size={20} className="mr-4 h-4 w-4" />,
+      icon: <AtSign size={20} className="mr-4 h-4 w-4" />,
     },
-    // {
-    //   id: 2,
-    //   name: "Settings",
-    //   path: "/settings",
-    //   icon: <Settings size={20} className="mr-4 h-4 w-4" />,
-    // },
+    {
+      id: 3,
+      name: "Contacts",
+      path: "/contacts",
+      icon: <User size={20} className="mr-4 h-4 w-4" />,
+    },
   ];
 
   const handleLogout = () => {

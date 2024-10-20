@@ -17,6 +17,7 @@ import AuthRoutes from "./components/layout/AuthRoutes";
 import ModalProvider from "./hooks/useModal";
 import Dashboard from "./pages/user/dashboard/Dashboard";
 import Accounts from "./pages/user/accounts/Accounts";
+import Contacts from "./pages/user/contacts/Contacts";
 
 export const UNAUTHORIZED_EVENT = "unauthorized_error";
 const handleError = (error: any) => {
@@ -56,6 +57,7 @@ function App() {
                 <Route element={<ProtectedRoutes />}>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/accounts" element={<Accounts />} />
+                  <Route path="/contacts" element={<Contacts />} />
                 </Route>
                 <Route element={<AuthRoutes />}>
                   <Route path="/register" element={<Register />} />

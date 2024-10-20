@@ -7,7 +7,7 @@ const router = Router()
 
 router.get("/", verifyJWT, getAllContacts)
 router.post('/add-contact', verifyJWT, addContact);
-router.put('/update-contact', verifyJWT, updateContact);
+router.post('/update-contact', verifyJWT, updateContact);
 
 
 

@@ -6,38 +6,33 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useModal } from "@/hooks/useModal";
 import { CellContext, RowData } from "@tanstack/react-table";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import UpdateContact from "./UpdateContact.dialog";
+
+interface ContactRowData {
+  id: string;
+  name: string;
+  email: string;
+}
 
 export const columns = [
   {
-    accessorKey: "emailId",
-    header: "Email Account",
+    accessorKey: "name",
+    header: "Contact Name",
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }: CellContext<RowData, string>) => {
-      const status: string = row.getValue("status");
-      return (
-        <>
-          {status === "Pending" ? (
-            <p className="text-yellow-500 bg-yellow-100 py-1 px-2 rounded-full w-max text-xs font-semibold border border-yellow-500 ">
-              {status}
-            </p>
-          ) : (
-            <p className="text-green-500 bg-green-100 py-1 px-2 rounded-full w-max text-xs font-semibold border border-green-500 ">
-              {status}
-            </p>
-          )}
-        </>
-      );
-    },
+    accessorKey: "email",
+    header: "Email Account",
   },
   {
     id: "actions",
     enableHiding: false,
-    cell: () => {
+    cell: function CellComponent({ row }: CellContext<RowData, string>) {
+      const { id, name, email } = row.original as ContactRowData;
+      const { setOpen } = useModal();
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -48,6 +43,20 @@ export const columns = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-40">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() =>
+                setOpen(
+                  <UpdateContact
+                    key={Math.random()}
+                    id={id}
+                    name={name}
+                    email={email}
+                  />
+                )
+              }>
+              <Pencil className="mr-2 h-4 w-4" />
+              <span>Edit</span>
+            </DropdownMenuItem>
             <DropdownMenuItem>
               <Trash2 className="mr-2 h-4 w-4" />
               <span>Delete</span>

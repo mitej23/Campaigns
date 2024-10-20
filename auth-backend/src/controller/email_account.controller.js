@@ -14,6 +14,12 @@ const addEmailAccount = async (req, res) => {
 		const { emailId } = req.body;
 		const { id } = req.user;
 
+		if (emailId === "") {
+			return res
+				.status(204)
+				.json({ message: 'Email Id cannot be empty' });
+		}
+
 		// Check if the email already exists for this user
 		const existingAccount = await db.select()
 			.from(emailAccounts)

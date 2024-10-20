@@ -66,7 +66,12 @@ const Dashboard = () => {
           Create Campaign
         </Button>
       </div>
-      <DataTable columns={columns} data={data} loading={loading} />
+      <DataTable
+        columns={columns}
+        data={data}
+        loading={loading}
+        DataEmptyComponent={() => <></>}
+      />
       {/* <div className="flex h-[25rem] flex-col items-center justify-center">
         <h1 className="text-xl font-semibold">Oops !!! No campaign Found.</h1>
         <p className="text-sm text-slate-600 my-2 mb-4">

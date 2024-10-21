@@ -1,6 +1,29 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
-import { emailTemplates, } from "../db/schema.js";
+import { emailTemplates } from "../db/schema.js";
+
+const getAllEmailTemplates = async (req, res) => {
+  try {
+    const { id } = req.user
+
+    const allEmailTemplates = await db
+      .select()
+      .from(emailTemplates)
+      .where(eq(emailTemplates.userId, id))
+
+    return res
+      .status(200)
+      .json({ message: 'List of all email templates.', data: allEmailTemplates });
+
+
+  } catch (error) {
+    console.log(error)
+
+    return res
+      .status(500)
+      .json({ error: 'Internal server error' });
+  }
+}
 
 const addEmailTemplate = async (req, res) => {
   try {
@@ -66,4 +89,4 @@ const updateEmailTemplate = async (req, res) => {
 
 
 
-export { addEmailTemplate, updateEmailTemplate };
+export { getAllEmailTemplates, addEmailTemplate, updateEmailTemplate };

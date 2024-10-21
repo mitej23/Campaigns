@@ -1,4 +1,4 @@
-import { AtSign, LayoutDashboard, User } from "lucide-react";
+import { AtSign, LayoutDashboard, Mails, User } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,12 @@ const Sidebar = () => {
       name: "Contacts",
       path: "/contacts",
       icon: <User size={20} className="mr-4 h-4 w-4" />,
+    },
+    {
+      id: 4,
+      name: "Email Templates",
+      path: "/email-templates",
+      icon: <Mails size={20} className="mr-4 h-4 w-4" />,
     },
   ];
 

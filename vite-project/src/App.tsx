@@ -18,6 +18,9 @@ import ModalProvider from "./hooks/useModal";
 import Dashboard from "./pages/user/dashboard/Dashboard";
 import Accounts from "./pages/user/accounts/Accounts";
 import Contacts from "./pages/user/contacts/Contacts";
+import EmailTemplate from "./pages/user/email_template/EmailTemplate";
+import { TooltipProvider } from "./components/ui/tooltip";
+import CreateEmailTemplate from "./pages/user/email_template/CreateEmailTemplate";
 
 export const UNAUTHORIZED_EVENT = "unauthorized_error";
 const handleError = (error: any) => {
@@ -49,24 +52,34 @@ function App() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <Router>
-          <ModalProvider>
-            <AuthProvider>
-              <Routes>
-                <Route path="/" element={<h1>Landing Page</h1>} />
-                <Route element={<ProtectedRoutes />}>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/accounts" element={<Accounts />} />
-                  <Route path="/contacts" element={<Contacts />} />
-                </Route>
-                <Route element={<AuthRoutes />}>
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/login" element={<Login />} />
-                </Route>
-              </Routes>
-            </AuthProvider>
-          </ModalProvider>
-        </Router>
+        <TooltipProvider>
+          <Router>
+            <ModalProvider>
+              <AuthProvider>
+                <Routes>
+                  <Route path="/" element={<h1>Landing Page</h1>} />
+                  <Route element={<ProtectedRoutes />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/accounts" element={<Accounts />} />
+                    <Route path="/contacts" element={<Contacts />} />
+                    <Route
+                      path="/email-templates"
+                      element={<EmailTemplate />}
+                    />
+                    <Route
+                      path="/email-templates/create"
+                      element={<CreateEmailTemplate />}
+                    />
+                  </Route>
+                  <Route element={<AuthRoutes />}>
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                  </Route>
+                </Routes>
+              </AuthProvider>
+            </ModalProvider>
+          </Router>
+        </TooltipProvider>
         <Toaster />
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

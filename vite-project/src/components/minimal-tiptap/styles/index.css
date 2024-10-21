@@ -1,8 +1,8 @@
-@import './partials/code.css';
-@import './partials/placeholder.css';
-@import './partials/lists.css';
-@import './partials/typography.css';
-@import './partials/zoom.css';
+@import "./partials/code.css";
+@import "./partials/placeholder.css";
+@import "./partials/lists.css";
+@import "./partials/typography.css";
+@import "./partials/zoom.css";
 
 :root {
   --mt-overlay: rgba(251, 251, 251, 0.75);
@@ -183,3 +183,38 @@
 .minimal-tiptap-editor .ProseMirror .selection::selection {
   background: transparent;
 }
+
+.variable-mention {
+  border-radius: 2px;
+  padding: 2px 4px;
+}
+
+/* New style for highlighting variables */
+.variable-highlight {
+  background-color: #e6f3ff; /* Light blue background */
+  border: 1px solid #b3d9ff; /* Slightly darker blue border */
+  color: #0066cc; /* Dark blue text for contrast */
+}
+
+.items {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 10px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.2rem;
+}
+
+.item {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+  display: block;
+  margin: 0;
+  padding: 0.2rem 0.4rem;
+  text-align: left;
+  width: 100%;
+}
+
+.item.is-selected {
+  border-color: #000;
+}
+

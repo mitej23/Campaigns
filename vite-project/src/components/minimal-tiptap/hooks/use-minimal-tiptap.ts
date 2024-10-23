@@ -144,6 +144,7 @@ export const useMinimalTiptapEditor = ({
   onBlur,
   ...props
 }: UseMinimalTiptapEditorProps) => {
+  const previousValueRef = React.useRef(value);
   const throttledSetValue = useThrottle(
     (value: Content) => onUpdate?.(value),
     throttleDelay
@@ -183,6 +184,14 @@ export const useMinimalTiptapEditor = ({
     onBlur: ({ editor }) => handleBlur(editor),
     ...props,
   });
+
+  // Update content when value changes
+  React.useEffect(() => {
+    if (editor && value !== undefined && value !== previousValueRef.current) {
+      editor.commands.setContent(value);
+      previousValueRef.current = value;
+    }
+  }, [editor, value]);
 
   return editor;
 };

@@ -6,46 +6,52 @@ import { useState } from "react";
 import DasboardLayout from "@/components/layout/DasboardLayout";
 import { MinimalTiptapEditor } from "@/components/minimal-tiptap";
 import { Content } from "@tiptap/core";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+import { queryClient } from "@/App";
+import usePostQuery from "@/hooks/usePostQuery";
 
 const CreateEmailTemplate: React.FC = () => {
   const navigate = useNavigate();
-  //   const { mutate, isPending } = usePostQuery("/api/contacts/add-contact");
+  const { mutate, isPending } = usePostQuery(
+    "/api/email-template/create-email-template"
+  );
   const [templateName, setTemplateName] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [editorContent, setEditorContent] = useState<Content>("");
 
-  //   const handleCreateEmailTemplate = () => {
-  //     if (emailSubject === "" || templateName === "") return;
+  const handleCreateEmailTemplate = () => {
+    if (emailSubject === "" || templateName === "" || editorContent === "")
+      return;
 
-  //     mutate(
-  //       {
-  //         name,
-  //         email: emailSubject,
-  //       },
-  //       {
-  //         onSuccess: () => {
-  //           toast({
-  //             title: "Contact added your list Successfully.",
-  //             description: "You would be able to send email to this contact.",
-  //           });
-  //           setClose();
-  //           queryClient.invalidateQueries({
-  //             queryKey: ["contacts"],
-  //           });
-  //         },
-  //         onError: () => {
-  //           toast({
-  //             title: "Oops!! Email Account already exists",
-  //             description: "Enter different email id..",
-  //           });
-  //         },
-  //       }
-  //     );
-  //   };
-
-  console.log(editorContent);
+    mutate(
+      {
+        name: templateName,
+        subject: emailSubject,
+        content: editorContent,
+      },
+      {
+        onSuccess: () => {
+          navigate("/email-templates");
+          toast({
+            title: "Email Template added Successfully.",
+            description: "You would be able to send email using this template.",
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["emailTemplates"],
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Name, subject and email template cannot be empty",
+            description: "Please fill the input boxes...",
+          });
+        },
+      }
+    );
+  };
 
   return (
     <DasboardLayout>
@@ -58,7 +64,7 @@ const CreateEmailTemplate: React.FC = () => {
       <div className="flex flex-row items-end justify-between mb-6">
         <h1 className="text-2xl font-semibold">Create Email Template</h1>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col mb-4">
         <div className="w-full mb-4">
           <Label htmlFor="name" className="text-right">
             Email Template Name
@@ -99,6 +105,24 @@ const CreateEmailTemplate: React.FC = () => {
             editorClassName="focus:outline-none"
           />
         </div>
+      </div>
+      <div className="flex items-end">
+        <Button
+          size={"sm"}
+          type="submit"
+          className="w-max ml-auto"
+          disabled={
+            emailSubject === "" || templateName === "" || editorContent === ""
+              ? true
+              : false
+          }
+          onClick={handleCreateEmailTemplate}>
+          {isPending ? (
+            <Loader className="animate-spin" size={20} />
+          ) : (
+            "Create Email Template"
+          )}
+        </Button>
       </div>
     </DasboardLayout>
   );

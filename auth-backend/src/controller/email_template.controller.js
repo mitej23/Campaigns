@@ -25,10 +25,41 @@ const getAllEmailTemplates = async (req, res) => {
   }
 }
 
+const getEmailTemplate = async (req, res) => {
+  try {
+    const { id } = req.user
+    const { id: templateId } = req.params
+
+    const allEmailTemplates = await db
+      .select()
+      .from(emailTemplates)
+      .where(eq(emailTemplates.userId, id))
+      .where(eq(emailTemplates.id, templateId))
+
+    return res
+      .status(200)
+      .json({ message: 'Email template fetched.', data: allEmailTemplates });
+
+
+  } catch (error) {
+    console.log(error)
+
+    return res
+      .status(500)
+      .json({ error: 'Internal server error' });
+  }
+}
+
 const addEmailTemplate = async (req, res) => {
   try {
     const { name, subject, content } = req.body;
     const { id: userId } = req.user;
+
+    if (!name || !subject || !content) {
+      return res
+        .status(204)
+        .json({ message: 'Name, Subject and template cannot be empty' });
+    }
 
     const [template] = await db.insert(emailTemplates).values({
       name,
@@ -89,4 +120,4 @@ const updateEmailTemplate = async (req, res) => {
 
 
 
-export { getAllEmailTemplates, addEmailTemplate, updateEmailTemplate };
+export { getAllEmailTemplates, addEmailTemplate, updateEmailTemplate, getEmailTemplate };

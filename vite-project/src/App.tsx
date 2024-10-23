@@ -21,6 +21,7 @@ import Contacts from "./pages/user/contacts/Contacts";
 import EmailTemplate from "./pages/user/email_template/EmailTemplate";
 import { TooltipProvider } from "./components/ui/tooltip";
 import CreateEmailTemplate from "./pages/user/email_template/CreateEmailTemplate";
+import UpdateEmailTemplate from "./pages/user/email_template/UpdateEmailTemplate";
 
 export const UNAUTHORIZED_EVENT = "unauthorized_error";
 const handleError = (error: any) => {
@@ -69,6 +70,10 @@ function App() {
                     <Route
                       path="/email-templates/create"
                       element={<CreateEmailTemplate />}
+                    />
+                    <Route
+                      path="/email-templates/:id"
+                      element={<UpdateEmailTemplate />}
                     />
                   </Route>
                   <Route element={<AuthRoutes />}>

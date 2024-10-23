@@ -9,11 +9,11 @@ import {
 // import { useModal } from "@/hooks/useModal";
 import { CellContext, RowData } from "@tanstack/react-table";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-// interface ContactRowData {
-//   id: string;
-//   name: string;
-// }
+interface ContactRowData {
+  id: string;
+}
 
 export const columns = [
   {
@@ -28,10 +28,8 @@ export const columns = [
     id: "actions",
     enableHiding: false,
     cell: function CellComponent({ row }: CellContext<RowData, string>) {
-      //   const { id, name, email } = row.original as ContactRowData;
-      //   const { setOpen } = useModal();
-
-      console.log(row);
+      const { id } = row.original as ContactRowData;
+      const navigate = useNavigate();
 
       return (
         <DropdownMenu>
@@ -44,17 +42,9 @@ export const columns = [
           <DropdownMenuContent align="end" className="min-w-40">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={
-                () => {}
-                // setOpen(
-                //   <UpdateContact
-                //     key={Math.random()}
-                //     id={id}
-                //     name={name}
-                //     email={email}
-                //   />
-                // )
-              }>
+              onClick={() => {
+                navigate(`/email-templates/${id}`);
+              }}>
               <Pencil className="mr-2 h-4 w-4" />
               <span>Edit</span>
             </DropdownMenuItem>

@@ -8,6 +8,24 @@ const createVerifyEmailIdentityCommand = (emailAddress) => {
 	return new VerifyEmailIdentityCommand({ EmailAddress: emailAddress });
 };
 
+const getEmails = async (req, res) => {
+	try {
+		const { id } = req.user;
+
+		// Fetch all email accounts for the user
+		const emailAccs = await db.select()
+			.from(emailAccounts)
+			.where(eq(emailAccounts.userId, id))
+
+		return res
+			.status(200)
+			.json({ message: 'List of verified email accounts', data: emailAccs });
+
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ error: 'Internal server error' });
+	}
+}
 
 const addEmailAccount = async (req, res) => {
 	try {
@@ -107,4 +125,4 @@ const checkAllEmailStatuses = async (req, res) => {
 
 
 
-export { addEmailAccount, checkAllEmailStatuses }
+export { addEmailAccount, checkAllEmailStatuses, getEmails }

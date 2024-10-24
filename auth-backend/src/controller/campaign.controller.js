@@ -1,20 +1,122 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
-import { campaignContact, campaigns, emailAccounts } from "../db/schema.js";
+import { campaignContact, campaigns, contacts, emailAccounts } from "../db/schema.js";
 
 const getAllCampaigns = async (req, res) => {
   try {
     const { id } = req.user;
 
     const allCampaigns = await db
-      .select()
+      .select({
+        // Campaign fields
+        id: campaigns.id,
+        name: campaigns.name,
+        status: campaigns.status,
+        createdAt: campaigns.createdAt,
+        // Email account fields
+        emailAccount: {
+          id: emailAccounts.id,
+          emailId: emailAccounts.emailId,
+          status: emailAccounts.status,
+        }
+      })
       .from(campaigns)
-      .leftJoin(emailAccounts, eq(emailAccounts.id, campaigns.emailAccountsId))
-      .where(eq(campaigns.userId, id))
+      .leftJoin(
+        emailAccounts,
+        eq(emailAccounts.id, campaigns.emailAccountsId)
+      )
+      .where(eq(campaigns.userId, id));
+
+    // Then, for each campaign, get its contacts
+    const campaignsWithContacts = await Promise.all(
+      allCampaigns.map(async (campaign) => {
+        const campaignContacts = await db
+          .select({
+            id: contacts.id,
+            name: contacts.name,
+            email: contacts.email
+          })
+          .from(campaignContact)
+          .leftJoin(
+            contacts,
+            eq(contacts.id, campaignContact.contactId)
+          )
+          .where(eq(campaignContact.campaignId, campaign.id));
+
+        return {
+          ...campaign,
+          contacts: campaignContacts
+        };
+      })
+    );
 
     return res
       .status(200)
-      .json({ message: 'List of all campaigns.', data: allCampaigns });
+      .json({ message: 'List of all campaigns.', data: campaignsWithContacts });
+
+
+  } catch (error) {
+    console.log(error)
+
+    return res
+      .status(500)
+      .json({ error: 'Internal server error' });
+  }
+}
+
+const getIdvCampaigns = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { id: campaignId } = req.params
+
+    const idvCampaign = await db
+      .select({
+        // Campaign fields
+        id: campaigns.id,
+        name: campaigns.name,
+        status: campaigns.status,
+        createdAt: campaigns.createdAt,
+        // Email account fields
+        emailAccount: {
+          id: emailAccounts.id,
+          emailId: emailAccounts.emailId,
+          status: emailAccounts.status,
+        }
+      })
+      .from(campaigns)
+      .leftJoin(
+        emailAccounts,
+        eq(emailAccounts.id, campaigns.emailAccountsId)
+      )
+      .where(eq(campaigns.userId, id))
+      .where(eq(campaigns.id, campaignId))
+
+    // Then, for each campaign, get its contacts
+    const idvCampaignsWithContacts = await Promise.all(
+      idvCampaign.map(async (campaign) => {
+        const campaignContacts = await db
+          .select({
+            id: contacts.id,
+            name: contacts.name,
+            email: contacts.email
+          })
+          .from(campaignContact)
+          .leftJoin(
+            contacts,
+            eq(contacts.id, campaignContact.contactId)
+          )
+          .where(eq(campaignContact.campaignId, campaign.id));
+
+        return {
+          ...campaign,
+          contacts: campaignContacts
+        };
+      })
+    );
+
+    return res
+      .status(200)
+      .json({ message: 'List of all campaigns.', data: idvCampaignsWithContacts[0] || {} });
 
 
   } catch (error) {
@@ -91,7 +193,6 @@ const publishCampaign = async (req, res) => {
   // check whether it is not already published.
 }
 
-
 const addContact = async (req, res) => {
   try {
     const { contactId, campaignId } = req.body
@@ -145,4 +246,4 @@ const removeContact = async (req, res) => {
 }
 
 
-export { getAllCampaigns, addCampaign, updateCampaign, addContact, removeContact }
+export { getAllCampaigns, addCampaign, updateCampaign, addContact, removeContact, getIdvCampaigns }

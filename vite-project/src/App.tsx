@@ -22,6 +22,7 @@ import EmailTemplate from "./pages/user/email_template/EmailTemplate";
 import { TooltipProvider } from "./components/ui/tooltip";
 import CreateEmailTemplate from "./pages/user/email_template/CreateEmailTemplate";
 import UpdateEmailTemplate from "./pages/user/email_template/UpdateEmailTemplate";
+import Campaign from "./pages/user/dashboard/Campaign";
 
 export const UNAUTHORIZED_EVENT = "unauthorized_error";
 const handleError = (error: any) => {
@@ -61,6 +62,7 @@ function App() {
                   <Route path="/" element={<h1>Landing Page</h1>} />
                   <Route element={<ProtectedRoutes />}>
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard/:id" element={<Campaign />} />
                     <Route path="/accounts" element={<Accounts />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route

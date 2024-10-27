@@ -27,7 +27,7 @@ const Accounts = () => {
 
   return (
     <DasboardLayout>
-      <div className="flex flex-row items-end justify-between">
+      <div className="flex flex-row items-end justify-between mb-4">
         <h1 className="text-2xl font-semibold">Your Email Accounts</h1>
         <Button
           size={"sm"}

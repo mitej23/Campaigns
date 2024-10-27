@@ -6,6 +6,8 @@ import { ChevronLeft, Loader } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import useGetQuery from "@/hooks/useGetQuery";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import CampaignContacts from "./Campaign.Contacts";
+// import CampaignAutomationBuilder from "./Campaign.AutomationBuilder";
 
 type Contact = {
   // Add properties related to contacts if available
@@ -32,7 +34,7 @@ const Campaign: React.FC = () => {
     id || "",
     `campaign-details`
   );
-  const [campaignData, setCampaignData] = useState<CampaignType | object>({});
+  const [campaignData, setCampaignData] = useState<CampaignType | null>(null);
 
   //   const handleCampaign = () => {
   //     if (emailSubject === "" || templateName === "" || editorContent === "")
@@ -77,13 +79,17 @@ const Campaign: React.FC = () => {
     {
       value: "contacts",
       label: "Contacts",
-      content: "contacts settings and preferences.",
+      content: (data: CampaignType) => (
+        <CampaignContacts data={data?.contacts} />
+      ),
     },
-    {
-      value: "automation_builder",
-      label: "Automation Builder",
-      content: "Change your password here.",
-    },
+    // {
+    //   value: "automation_builder",
+    //   label: "Automation Builder",
+    //   content: (data: CampaignType) => (
+    //     <CampaignAutomationBuilder data={data} />
+    //   ),
+    // },
   ];
 
   const getTabStyles = (tabStyle = "default") => {
@@ -129,6 +135,7 @@ const Campaign: React.FC = () => {
               placeholder="Enter template name..."
               className="max-w-md"
               value={campaignData?.name || ""}
+              readOnly
               //   onChange={(e) => setTemplateName(e.target.value)}
             />
             <Label htmlFor="name" className="text-right">
@@ -139,6 +146,7 @@ const Campaign: React.FC = () => {
               placeholder="Enter subject..."
               className="max-w-md"
               value={campaignData?.emailAccount?.emailId || ""}
+              readOnly
               //   onChange={(e) => setEmailSubject(e.target.value)}
             />
           </div>
@@ -157,7 +165,7 @@ const Campaign: React.FC = () => {
             </TabsList>
             {tabData.map((tab) => (
               <TabsContent key={tab.value} value={tab.value} className="mt-4">
-                <p>{tab.content}</p>
+                {tab.content(data?.data)}
               </TabsContent>
             ))}
           </Tabs>

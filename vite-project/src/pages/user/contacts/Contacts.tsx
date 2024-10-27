@@ -23,7 +23,7 @@ const Contacts = () => {
 
   return (
     <DasboardLayout>
-      <div className="flex flex-row items-end justify-between">
+      <div className="flex fleDataEmptyComponentx-row items-end justify-between mb-4">
         <h1 className="text-2xl font-semibold">Your Contact List</h1>
         <Button
           size={"sm"}

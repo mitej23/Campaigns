@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useGetQuery from "@/hooks/useGetQuery";
 import { useModal } from "@/hooks/useModal";
 import { CirclePlus, Loader, Mail, User } from "lucide-react";
-import CreateCampaign from "./CreateCampaign.dialog";
+import CreateCampaign from "../campaign/CreateCampaign.dialog";
 import { useNavigate } from "react-router-dom";
 
 type Contact = {

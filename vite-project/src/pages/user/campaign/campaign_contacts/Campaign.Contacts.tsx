@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import AddContactsToCampaign from "./AddContactsToCampaign.modal";
 import { useModal } from "@/hooks/useModal";
-import { columns } from "./Campain.Contacts.columns";
+import { columns } from "./Campaign.Contacts.columns";
 import { DataTable } from "@/components/elements/DataTable";
 
 type Contact = {

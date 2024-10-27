@@ -6,14 +6,14 @@ import { ChevronLeft, Loader } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import useGetQuery from "@/hooks/useGetQuery";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import CampaignContacts from "./Campaign.Contacts";
+import CampaignContacts from "./campaign_contacts/Campaign.Contacts";
 import CampaignAutomationBuilder from "./Campaign.AutomationBuilder";
 // import CampaignAutomationBuilder from "./Campaign.AutomationBuilder";
 
 type Contact = {
   id: string;
   name: string;
-  email: string
+  email: string;
 };
 
 type EmailAccount = {
@@ -83,7 +83,7 @@ const Campaign: React.FC = () => {
       value: "contacts",
       label: "Contacts",
       content: (data: CampaignType) => (
-        <CampaignContacts data={data?.contacts} campaignId={id} />
+        <CampaignContacts data={data?.contacts} campaignId={id || ""} />
       ),
     },
     {

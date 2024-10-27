@@ -54,6 +54,7 @@ const AddContactsToCampaign: React.FC<{
             description: "You would be able to send email to this contact.",
           });
           setClose();
+          setRowSelection({});
           queryClient.invalidateQueries({
             queryKey: ["campaign-details", id],
           });

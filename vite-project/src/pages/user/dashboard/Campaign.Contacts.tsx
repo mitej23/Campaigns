@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
 import AddContactsToCampaign from "./AddContactsToCampaign.modal";
 import { useModal } from "@/hooks/useModal";
+import { columns } from "./Campain.Contacts.columns";
+import { DataTable } from "@/components/elements/DataTable";
 
+type Contact = {
+  id: string;
+  name: string;
+  email: string;
+};
 const DataEmptyComponent = () => {
   return (
     <div className="flex h-[20rem] flex-col items-center justify-center">
@@ -13,7 +20,13 @@ const DataEmptyComponent = () => {
   );
 };
 
-const CampaignContacts = ({ data }) => {
+const CampaignContacts = ({
+  data,
+  campaignId,
+}: {
+  data: Contact[];
+  campaignId: string;
+}) => {
   const { setOpen } = useModal();
 
   return (
@@ -23,11 +36,23 @@ const CampaignContacts = ({ data }) => {
           size={"sm"}
           type="submit"
           className="w-max ml-auto"
-          onClick={() => setOpen(<AddContactsToCampaign />)}>
+          onClick={() =>
+            setOpen(
+              <AddContactsToCampaign
+                id={campaignId}
+                disableRowWithThisData={data.map(({ id }) => id)}
+              />
+            )
+          }>
           Add Contacts
         </Button>
       </div>
-      <div>{data.length > 0 ? <></> : <DataEmptyComponent />}</div>
+      <DataTable
+        columns={columns}
+        data={data}
+        loading={false}
+        DataEmptyComponent={DataEmptyComponent}
+      />
     </>
   );
 };

@@ -24,6 +24,7 @@ export const columns = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
+        disabled={!row.getCanSelect()}
         aria-label="Select row"
       />
     ),

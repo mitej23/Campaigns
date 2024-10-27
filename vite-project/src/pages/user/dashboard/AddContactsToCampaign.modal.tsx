@@ -14,6 +14,10 @@ import { Loader } from "lucide-react";
 import { DataTable } from "@/components/elements/DataTable";
 import { columns } from "./AddContactToCampaign.columns";
 import useGetQuery from "@/hooks/useGetQuery";
+import { useState } from "react";
+import usePostQuery from "@/hooks/usePostQuery";
+import { toast } from "@/hooks/use-toast";
+import { queryClient } from "@/App";
 
 const DataEmptyComponent = () => {
   return (
@@ -26,35 +30,42 @@ const DataEmptyComponent = () => {
   );
 };
 
-const AddContactsToCampaign: React.FC = () => {
+const AddContactsToCampaign: React.FC<{
+  id: string;
+  disableRowWithThisData: string[];
+}> = ({ id, disableRowWithThisData }) => {
+  const [rowSelection, setRowSelection] = useState({});
+  const { mutate, isPending: loading } = usePostQuery(
+    "/api/campaigns/add-some-contact"
+  );
   const { data, isPending } = useGetQuery("/api/contacts", "", "contacts");
   const { isOpen, setClose } = useModal();
 
   const handleAddContactsToCampaign = () => {
-    // mutate(
-    //   {
-    //     // name,
-    //     // email: emailAccount,
-    //   },
-    //   {
-    //     onSuccess: () => {
-    //       toast({
-    //         title: "Contact added your list Successfully.",
-    //         description: "You would be able to send email to this contact.",
-    //       });
-    //       setClose();
-    //       queryClient.invalidateQueries({
-    //         queryKey: ["contacts"],
-    //       });
-    //     },
-    //     onError: () => {
-    //       toast({
-    //         title: "Oops!! Email Account already exists",
-    //         description: "Enter different email id..",
-    //       });
-    //     },
-    //   }
-    // );
+    mutate(
+      {
+        contactIds: Object.keys(rowSelection),
+        campaignId: id,
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Contact added your list Successfully.",
+            description: "You would be able to send email to this contact.",
+          });
+          setClose();
+          queryClient.invalidateQueries({
+            queryKey: ["campaign-details", id],
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Oops!! There was some issue",
+            description: "Try again later..",
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -73,13 +84,16 @@ const AddContactsToCampaign: React.FC = () => {
           DataEmptyComponent={DataEmptyComponent}
           isSelection={true}
           paginationCount={4}
+          rowSelection={rowSelection}
+          setRowSelection={setRowSelection}
+          disableRowWithThisData={disableRowWithThisData}
         />
         <DialogFooter>
           <Button
             size={"sm"}
             type="submit"
             onClick={handleAddContactsToCampaign}>
-            {isPending ? (
+            {loading ? (
               <Loader className="animate-spin" size={20} />
             ) : (
               "Add Contacts"

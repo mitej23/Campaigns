@@ -208,10 +208,44 @@ const addContact = async (req, res) => {
       .status(201)
       .json({ message: 'Contact added to campaign successfully', contactCampaign });
 
+  } catch (error) {
+    console.log(error)
 
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+const addSomeContacts = async (req, res) => {
+  try {
+    const { contactIds, campaignId } = req.body
+    const { id } = req.user;
+
+    const campaignContacts = await db.transaction(async (trx) => {
+      const insertPromises = contactIds.map(contactId =>
+        trx.insert(campaignContact).values({
+          contactId,
+          campaignId,
+          userId: id
+        })
+      );
+
+      return await Promise.all(insertPromises);
+    });
+
+    return res.status(201).json({
+      message: `Successfully added ${contactIds.length} contacts to campaign`,
+      campaignContacts
+    });
 
   } catch (error) {
     console.log(error)
+
+    // Handle specific database errors
+    if (error.code === '23505') { // PostgreSQL unique constraint violation
+      return res.status(409).json({
+        error: 'Duplicate contact association detected'
+      });
+    }
 
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -246,4 +280,4 @@ const removeContact = async (req, res) => {
 }
 
 
-export { getAllCampaigns, addCampaign, updateCampaign, addContact, removeContact, getIdvCampaigns }
+export { getAllCampaigns, addCampaign, updateCampaign, addContact, removeContact, getIdvCampaigns, addSomeContacts }

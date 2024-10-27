@@ -7,10 +7,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import useGetQuery from "@/hooks/useGetQuery";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import CampaignContacts from "./Campaign.Contacts";
+import CampaignAutomationBuilder from "./Campaign.AutomationBuilder";
 // import CampaignAutomationBuilder from "./Campaign.AutomationBuilder";
 
 type Contact = {
-  // Add properties related to contacts if available
+  id: string;
+  name: string;
+  email: string
 };
 
 type EmailAccount = {
@@ -80,16 +83,14 @@ const Campaign: React.FC = () => {
       value: "contacts",
       label: "Contacts",
       content: (data: CampaignType) => (
-        <CampaignContacts data={data?.contacts} />
+        <CampaignContacts data={data?.contacts} campaignId={id} />
       ),
     },
-    // {
-    //   value: "automation_builder",
-    //   label: "Automation Builder",
-    //   content: (data: CampaignType) => (
-    //     <CampaignAutomationBuilder data={data} />
-    //   ),
-    // },
+    {
+      value: "automation_builder",
+      label: "Automation Builder",
+      content: () => <CampaignAutomationBuilder />,
+    },
   ];
 
   const getTabStyles = (tabStyle = "default") => {

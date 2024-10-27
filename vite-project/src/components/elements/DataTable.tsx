@@ -4,6 +4,7 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -28,6 +29,9 @@ interface DataTableProps<TData, TValue> {
   DataEmptyComponent: React.FC;
   isSelection?: boolean;
   paginationCount?: number;
+  rowSelection?: RowSelectionState;
+  setRowSelection?: React.Dispatch<React.SetStateAction<RowSelectionState>>;
+  disableRowWithThisData?: string[];
 }
 
 export function DataTable<TData, TValue>({
@@ -36,17 +40,23 @@ export function DataTable<TData, TValue>({
   loading,
   DataEmptyComponent,
   isSelection = false,
+  rowSelection = {},
+  setRowSelection,
   paginationCount = 10,
+  disableRowWithThisData = [],
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getRowId: (row: any) => row.id,
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    enableRowSelection: (row) =>
+      !disableRowWithThisData.includes(row.original.id),
     globalFilterFn: "includesString",
     initialState: {
       pagination: {

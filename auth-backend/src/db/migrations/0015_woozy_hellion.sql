@@ -1,0 +1,1 @@
+ALTER TABLE "campaigns" ADD COLUMN "automation_flow_editor_data" text;

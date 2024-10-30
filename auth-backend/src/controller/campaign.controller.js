@@ -76,6 +76,7 @@ const getIdvCampaigns = async (req, res) => {
         name: campaigns.name,
         status: campaigns.status,
         createdAt: campaigns.createdAt,
+        automationFlowEditorData: campaigns.automationFlowEditorData,
         // Email account fields
         emailAccount: {
           id: emailAccounts.id,

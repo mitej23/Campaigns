@@ -7,8 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useGetQuery from "@/hooks/useGetQuery";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import CampaignContacts from "./campaign_contacts/Campaign.Contacts";
-import CampaignAutomationBuilder from "./Campaign.AutomationBuilder";
-// import CampaignAutomationBuilder from "./Campaign.AutomationBuilder";
+import CampaignAutomationBuilder from "./campaign_automation/Campaign.AutomationBuilder";
 
 type Contact = {
   id: string;
@@ -24,9 +23,10 @@ type CampaignType = {
   id: string;
   name: string;
   status: string;
-  contacts: Contact[]; // Array of Contact objects
-  createdAt: string; // ISO date string
+  contacts: Contact[];
+  createdAt: string;
   emailAccount: EmailAccount;
+  automationFlowEditorData: string | null;
 };
 
 const Campaign: React.FC = () => {
@@ -38,37 +38,6 @@ const Campaign: React.FC = () => {
     `campaign-details`
   );
   const [campaignData, setCampaignData] = useState<CampaignType | null>(null);
-
-  //   const handleCampaign = () => {
-  //     if (emailSubject === "" || templateName === "" || editorContent === "")
-  //       return;
-
-  //     mutate(
-  //       {
-  //         name: templateName,
-  //         subject: emailSubject,
-  //         content: editorContent,
-  //       },
-  //       {
-  //         onSuccess: () => {
-  //           navigate("/email-templates");
-  //           toast({
-  //             title: "Email Template added Successfully.",
-  //             description: "You would be able to send email using this template.",
-  //           });
-  //           queryClient.invalidateQueries({
-  //             queryKey: ["emailTemplates"],
-  //           });
-  //         },
-  //         onError: () => {
-  //           toast({
-  //             title: "Name, subject and email template cannot be empty",
-  //             description: "Please fill the input boxes...",
-  //           });
-  //         },
-  //       }
-  //     );
-  //   };
 
   useEffect(() => {
     if (!isPending) {
@@ -89,7 +58,11 @@ const Campaign: React.FC = () => {
     {
       value: "automation_builder",
       label: "Automation Builder",
-      content: () => <CampaignAutomationBuilder />,
+      content: (data: CampaignType) => (
+        <CampaignAutomationBuilder
+          automationFlowEditorData={data?.automationFlowEditorData}
+        />
+      ),
     },
   ];
 

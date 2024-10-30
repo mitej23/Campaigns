@@ -23,6 +23,7 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import CreateEmailTemplate from "./pages/user/email_template/CreateEmailTemplate";
 import UpdateEmailTemplate from "./pages/user/email_template/UpdateEmailTemplate";
 import Dashboard from "./pages/user/campaign/CampaignList";
+import AutomationBuilderEditor from "./pages/user/campaign/campaign_automation/AutomationBuilder.Editor";
 
 export const UNAUTHORIZED_EVENT = "unauthorized_error";
 const handleError = (error: any) => {
@@ -63,6 +64,10 @@ function App() {
                   <Route element={<ProtectedRoutes />}>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/dashboard/:id" element={<Campaign />} />
+                    <Route
+                      path="/dashboard/:id/editor"
+                      element={<AutomationBuilderEditor />}
+                    />
                     <Route path="/accounts" element={<Accounts />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route

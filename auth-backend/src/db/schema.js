@@ -43,6 +43,7 @@ export const campaigns = pgTable('campaigns', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),
   status: text('status').notNull(),
+  automationFlowEditorData: text('automation_flow_editor_data'),
   userId: uuid('user_id').notNull().references(() => users.id),
   emailAccountsId: uuid('email_accounts_id').notNull().references(() => emailAccounts.id),
   createdAt: timestamp('created_at').defaultNow(),

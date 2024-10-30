@@ -129,7 +129,7 @@ const Campaign: React.FC = () => {
           </div>
           <div className="grid grid-cols-[auto_1fr] items-baseline gap-4 mb-8">
             <Label htmlFor="name" className="text-right">
-              Email Template Name
+              Campaign Name
             </Label>
             <Input
               id="name"
@@ -140,7 +140,7 @@ const Campaign: React.FC = () => {
               //   onChange={(e) => setTemplateName(e.target.value)}
             />
             <Label htmlFor="name" className="text-right">
-              Subject
+              Campaign Email
             </Label>
             <Input
               id="name"

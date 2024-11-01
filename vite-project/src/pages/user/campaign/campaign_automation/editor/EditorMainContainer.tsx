@@ -14,7 +14,6 @@ import {
   Node,
   OnBeforeDelete,
   OnNodesChange,
-  useViewport,
 } from "@xyflow/react";
 
 import { Separator } from "@/components/ui/separator";
@@ -108,7 +107,6 @@ const EditorMainContainer = () => {
   const layoutApplied = useRef(false);
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState(initialEdges);
-  const isNodesDeleted = useRef(false);
   const isEdgesDeleted = useRef(false);
   // const { zoom } = useViewport(); // Get current viewport
   // const [dragStartPosition, setDragStartPosition] = useState({ x: 0, y: 0 }); // Store drag start position

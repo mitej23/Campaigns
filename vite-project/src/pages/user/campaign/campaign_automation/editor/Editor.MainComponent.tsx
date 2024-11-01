@@ -62,7 +62,7 @@ const EditorMainComponent: React.FC<EditorMainComponentTypes> = ({
         onDrop={onDrop}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ maxZoom: 0.75 }}>
+        fitViewOptions={{ maxZoom: 1 }}>
         {/* <Panel position="top-right">
           <div className="panel">Top right</div>
         </Panel> */}

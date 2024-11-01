@@ -11,12 +11,13 @@ import {
   EmailNodeProps,
   StartNodeProps,
 } from "../types/EditorTypes";
-
-const handleStyle = {
-  width: "7.5px",
-  height: "7.5px",
-  outline: "1px solid black",
-};
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { GitBranch, Hourglass, Mail, SquareFunction } from "lucide-react";
 
 const CustomHandle = (props: HandleProps) => {
   const connections = useHandleConnections({
@@ -29,85 +30,84 @@ const CustomHandle = (props: HandleProps) => {
 const StartNode = (props: NodeProps<StartNodeProps>) => {
   const { data } = props;
   return (
-    <div
-      className="start node"
-      style={{
-        // background: data.background || 'white',
-        borderColor: data.background || "black",
-      }}>
-      <div>{data.label}</div>
+    <Card className="w-full cursor-grab  border-black bg-green-100">
+      <CardHeader className="flex flex-row items-center gap-4 p-4">
+        <SquareFunction size={16} />
+        <div className="!mt-0">
+          <CardTitle className="text-md">Trigger</CardTitle>
+          <CardDescription>{data.label}</CardDescription>
+        </div>
+      </CardHeader>
       <CustomHandle
         type="source"
-        style={handleStyle}
         position={Position.Bottom}
+        className="!h-4 !w-4 border-2 border-white bg-gray-800"
       />
-    </div>
+    </Card>
   );
 };
 
 const DelayNode = (props: NodeProps<DelayNodeProps>) => {
   const { data } = props;
   return (
-    <div
-      className="delay node"
-      style={{
-        // background: data.background || 'white',
-        borderColor: data.background || "black",
-      }}>
-      <CustomHandle type="target" style={handleStyle} position={Position.Top} />
-      <div>Delay</div>
-      <select
-        value={data.time}
-        // onChange={(e) => data.onChange("time", e.target.value)}
-      >
-        {[...Array(60)].map((_, i) => (
-          <option key={i} value={i + 1}>
-            {i + 1}
-          </option>
-        ))}
-      </select>
-      <select
-        value={data.format}
-        // onChange={(e) => data.onChange("format", e.target.value)}
-      >
-        <option value="minutes">Minutes</option>
-        <option value="hours">Hours</option>
-        <option value="days">Days</option>
-      </select>
+    <Card
+      className={`w-full cursor-grab border-black ${
+        data.connected === undefined
+          ? "bg-slate-50"
+          : data.connected
+          ? "bg-green-100"
+          : "bg-red-100"
+      }`}>
       <CustomHandle
-        style={handleStyle}
+        type="target"
+        position={Position.Top}
+        className="!h-4 !w-4 border-2 border-white bg-gray-800"
+      />
+      <CardHeader className="flex flex-row items-center gap-4 p-4">
+        <Hourglass size={16} />
+        <div className="!mt-0">
+          <CardTitle className="text-md">Delay Node</CardTitle>
+          <CardDescription>You can add delay in between.</CardDescription>
+        </div>
+      </CardHeader>
+      <CustomHandle
         type="source"
         position={Position.Bottom}
+        className="!h-4 !w-4 border-2 border-white bg-gray-800"
       />
-    </div>
+    </Card>
   );
 };
 
 export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
   const { data } = props;
   return (
-    <div
-      className="email node"
-      style={{
-        // background: data.background || 'white',
-        borderColor: data.background || "black",
-      }}>
-      <CustomHandle style={handleStyle} type="target" position={Position.Top} />
-      <div>Email</div>
-      <select
-        value={data.email}
-        // onChange={(e) => data.onChange("email", e.target.value)}
-      >
-        <option value="email1">Email 1</option>
-        <option value="email2">Email 2</option>
-        <option value="email3">Email 3</option>
-      </select>
+    <Card
+      className={`w-full cursor-grab border-black ${
+        data.connected === undefined
+          ? "bg-slate-50"
+          : data.connected
+          ? "bg-green-100"
+          : "bg-red-100"
+      }`}>
       <CustomHandle
-        style={handleStyle}
+        type="target"
+        position={Position.Top}
+        className="!h-4 !w-4 border-2 border-white bg-gray-800"
+      />
+      <CardHeader className="flex flex-row items-center gap-4 p-4">
+        <Mail size={16} />
+        <div className="!mt-0">
+          <CardTitle className="text-md">Email Node</CardTitle>
+          <CardDescription>Add an email to the flow.</CardDescription>
+        </div>
+      </CardHeader>
+      <CustomHandle
         type="source"
         position={Position.Bottom}
+        className="!h-4 !w-4 border-2 border-white bg-gray-800"
       />
-    </div>
+    </Card>
   );
 };
 
@@ -115,43 +115,70 @@ export const ConditionNode = (props: NodeProps<EmailNodeProps>) => {
   const { data } = props;
 
   return (
-    <div className="relative w-[60px] h-[60px] flex justify-center items-center">
+    // <div className="relative w-[60px] h-[60px] flex justify-center items-center">
+    //   <CustomHandle
+    //     className="!z-10"
+    //     style={{
+    //       zIndex: 1,
+    //     }}
+    //     type="target"
+    //     position={Position.Top}
+    //     id="incoming"
+    //   />
+
+    //   <div className="z-10 relative text-xs flex justify-center items-center h-full">
+    //     Read?
+    //   </div>
+
+    //   <div className="absolute left-1/2 top-1/2 w-10 h-10 bg-white border border-[#222] transform -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-sm" />
+
+    //   <CustomHandle
+    //     className="!z-10 !outline !outline-1 !outline-green !bg-green"
+    //     type="source"
+    //     position={Position.Left}
+    //     id="yes"
+    //   />
+
+    //   <CustomHandle
+    //     className="!z-10 !outline !outline-1 !outline-red !bg-red"
+    //     type="source"
+    //     position={Position.Right}
+    //     id="no"
+    //   />
+    // </div>
+    <Card
+      className={`w-full cursor-grab border-black ${
+        data.connected === undefined
+          ? "bg-slate-50"
+          : data.connected
+          ? "bg-green-100"
+          : "bg-red-100"
+      }`}>
       <CustomHandle
-        className="!z-10"
-        style={{
-          ...handleStyle,
-          zIndex: 1,
-        }}
         type="target"
         position={Position.Top}
-        id="incoming"
+        className="!h-4 !w-4 border-2 border-white bg-gray-800"
       />
-
-      <div className="z-10 relative text-xs flex justify-center items-center h-full">
-        Read?
-      </div>
-
-      <div
-        className="absolute left-1/2 top-1/2 w-10 h-10 bg-white border border-[#222] transform -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-sm"
-        style={{
-          borderColor: data.background || "black",
-        }}
-      />
-
+      <CardHeader className="flex flex-row items-center gap-4 p-4">
+        <GitBranch size={16} />
+        <div className="!mt-0">
+          <CardTitle className="text-md">Condition Node</CardTitle>
+          <CardDescription>Whether user opens the mail.</CardDescription>
+        </div>
+      </CardHeader>
       <CustomHandle
-        className="!z-10 !outline !outline-1 !outline-green !bg-green"
+        id="yes"
         type="source"
         position={Position.Left}
-        id="yes"
+        className="!h-4 !w-4 border-2 border-white bg-green-800"
       />
-
       <CustomHandle
-        className="!z-10 !outline !outline-1 !outline-red !bg-red"
+        id="no"
         type="source"
         position={Position.Right}
-        id="no"
+        className="!h-4 !w-4 border-2 border-white bg-red-800"
       />
-    </div>
+    </Card>
   );
 };
 

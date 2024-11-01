@@ -7,7 +7,7 @@ export interface CustomNodeType extends Node {
 export type StartNodeProps = Node<
   {
     label: string;
-    background: string;
+    connected?: boolean;
   },
   "start"
 >;
@@ -15,7 +15,7 @@ export type StartNodeProps = Node<
 export type DelayNodeProps = Node<
   {
     label: string;
-    background: string;
+    connected?: boolean;
     time: string;
     format: string;
   },
@@ -25,7 +25,7 @@ export type DelayNodeProps = Node<
 export type EmailNodeProps = Node<
   {
     label: string;
-    background: string;
+    connected?: boolean;
     email: string;
   },
   "email"

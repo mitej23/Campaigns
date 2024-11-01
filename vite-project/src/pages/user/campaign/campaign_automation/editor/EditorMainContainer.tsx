@@ -4,7 +4,6 @@ import {
   useEdgesState,
   useNodesState,
   useReactFlow,
-  useViewport,
   applyEdgeChanges,
   applyNodeChanges,
   Edge,
@@ -15,6 +14,7 @@ import {
   Node,
   OnBeforeDelete,
   OnNodesChange,
+  useViewport,
 } from "@xyflow/react";
 
 import { Separator } from "@/components/ui/separator";
@@ -31,7 +31,7 @@ const initialNodes: CustomNodeType[] = [
     id: "start",
     type: "start",
     position: { x: 0, y: 0 },
-    data: { label: "User is added" },
+    data: { label: "Triggers when new user is added." },
   },
 ];
 const initialEdges: Edge[] = [];
@@ -43,13 +43,17 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 
 // Helper function to get node dimensions
 const getNodeDimensions = (node: CustomNodeType) => {
-  const defaultDimensions = { width: 172, height: 56 };
+  const defaultDimensions = { width: 250, height: 56 };
+
+  const padding = 30;
+
+  console.log(node.type);
 
   const typeDimensions: Record<string, { width: number; height: number }> = {
-    start: { width: 90, height: 30 },
-    email: { width: 180, height: 60 },
-    delay: { width: 120, height: 60 },
-    condition: { width: 60, height: 60 },
+    start: { width: 269 + padding, height: 76 + padding },
+    email: { width: 219 + padding, height: 76 + padding },
+    delay: { width: 251 + padding, height: 76 + padding },
+    condition: { width: 245 + padding, height: 76 + padding },
   };
 
   return typeDimensions[node.type] || defaultDimensions;
@@ -106,7 +110,7 @@ const EditorMainContainer = () => {
   const [edges, setEdges] = useEdgesState(initialEdges);
   const isNodesDeleted = useRef(false);
   const isEdgesDeleted = useRef(false);
-  // const { x, y, zoom } = useViewport(); // Get current viewport
+  // const { zoom } = useViewport(); // Get current viewport
   // const [dragStartPosition, setDragStartPosition] = useState({ x: 0, y: 0 }); // Store drag start position
 
   const isConnectedToStart = useCallback(
@@ -140,9 +144,9 @@ const EditorMainContainer = () => {
 
           return {
             ...node,
-            style: {
-              ...node.style,
-              background: isConnected ? "green" : "red",
+            data: {
+              ...node.data,
+              connected: isConnected ? true : false,
             },
           };
         }
@@ -338,11 +342,6 @@ const EditorMainContainer = () => {
       type: string
     ) => {
       event.dataTransfer.setData("application/reactflow", type);
-      // Get the mouse position at drag start
-      // setDragStartPosition({
-      //   x: event.clientX,
-      //   y: event.clientY,
-      // });
     },
     []
   );
@@ -355,7 +354,7 @@ const EditorMainContainer = () => {
           ...node,
           data: {
             ...node.data,
-            background: "#90EE90", // Light green for connected, light red for unconnected
+            connected: true, // Light green for connected, light red for unconnected
           },
         }; // Skip the start node
       const isConnected = isConnectedToStart(node.id, new Set(), edges);
@@ -363,7 +362,7 @@ const EditorMainContainer = () => {
         ...node,
         data: {
           ...node.data,
-          background: isConnected ? "#90EE90" : "#FFB6C1", // Light green for connected, light red for unconnected
+          connected: isConnected ? true : false, // Light green for connected, light red for unconnected
         },
       };
     });
@@ -631,7 +630,8 @@ const EditorMainContainer = () => {
   );
 
   useEffect(() => {
-    if (isEdgesDeleted.current && isNodesDeleted.current) {
+    // on checks if
+    if (isEdgesDeleted.current) {
       console.log("After deletion fresh state");
       const tempNodes = updateAllNodes(nodes, edges).filter(
         (node): node is CustomNodeType => node !== undefined
@@ -642,7 +642,6 @@ const EditorMainContainer = () => {
       setEdges(tempEdges);
       setNodes(tempNodes);
       isEdgesDeleted.current = false;
-      isNodesDeleted.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges]);
@@ -654,6 +653,7 @@ const EditorMainContainer = () => {
       layoutApplied.current = false;
     }
   }, [nodes, fitView]);
+
   return (
     <div className="flex flex-row w-screen flex-1">
       <EditorMainComponent

@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useGetQuery from "@/hooks/useGetQuery";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import CampaignContacts from "./campaign_contacts/Campaign.Contacts";
-import CampaignAutomationBuilder from "./campaign_automation/Campaign.AutomationBuilder";
+import CampaignAutomationBuilder from "./campaign_automation/Campaign.AutomationBuilder.TabContainer";
 
 type Contact = {
   id: string;

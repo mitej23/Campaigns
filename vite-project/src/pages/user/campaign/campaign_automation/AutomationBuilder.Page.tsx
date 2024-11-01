@@ -4,6 +4,7 @@ import { ChevronLeft, Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import EditorMainContainer from "./editor/EditorMainContainer";
 
 type Contact = {
   id: string;
@@ -68,11 +69,7 @@ const AutomationBuilderEditor = () => {
         </div>
       </div>
       <Separator />
-      <div className="flex flex-row w-screen flex-1">
-        <div className="h-full flex-1 bg-gray-100"></div>
-        <Separator orientation="vertical" />
-        <div className="h-full w-72"></div>
-      </div>
+      <EditorMainContainer />
     </div>
   );
 };

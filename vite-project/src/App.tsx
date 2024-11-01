@@ -23,7 +23,8 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import CreateEmailTemplate from "./pages/user/email_template/CreateEmailTemplate";
 import UpdateEmailTemplate from "./pages/user/email_template/UpdateEmailTemplate";
 import Dashboard from "./pages/user/campaign/CampaignList";
-import AutomationBuilderEditor from "./pages/user/campaign/campaign_automation/AutomationBuilder.Editor";
+import AutomationBuilderEditor from "./pages/user/campaign/campaign_automation/AutomationBuilder.Page";
+import { ReactFlowProvider } from "@xyflow/react";
 
 export const UNAUTHORIZED_EVENT = "unauthorized_error";
 const handleError = (error: any) => {
@@ -66,7 +67,11 @@ function App() {
                     <Route path="/dashboard/:id" element={<Campaign />} />
                     <Route
                       path="/dashboard/:id/editor"
-                      element={<AutomationBuilderEditor />}
+                      element={
+                        <ReactFlowProvider>
+                          <AutomationBuilderEditor />
+                        </ReactFlowProvider>
+                      }
                     />
                     <Route path="/accounts" element={<Accounts />} />
                     <Route path="/contacts" element={<Contacts />} />

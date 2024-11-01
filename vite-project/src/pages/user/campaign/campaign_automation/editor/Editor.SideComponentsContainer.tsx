@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -9,8 +8,6 @@ import { GitBranch, Hourglass, Mail } from "lucide-react";
 
 type EditorSideComponentsContainerProps = {
   onDragStart: (event: React.DragEvent<HTMLDivElement>, type: string) => void;
-  onLayout: () => void;
-  onPublish: () => void;
 };
 
 interface NodeConfig {
@@ -43,7 +40,7 @@ const nodeConfigs: NodeConfig[] = [
 
 const EditorSideComponentsContainer: React.FC<
   EditorSideComponentsContainerProps
-> = ({ onDragStart, onLayout, onPublish }) => {
+> = ({ onDragStart }) => {
   return (
     <div className="flex flex-col gap-4 h-full max-w- p-4">
       <h4 className="text-lg font-bold ">Components</h4>
@@ -65,13 +62,6 @@ const EditorSideComponentsContainer: React.FC<
           </Card>
         );
       })}
-      <Button variant={"outline"} size={"sm"} onClick={() => onLayout()}>
-        Layout
-      </Button>
-      <Button variant={"outline"} size={"sm"} onClick={() => onPublish()}>
-        {" "}
-        Publish
-      </Button>
     </div>
   );
 };

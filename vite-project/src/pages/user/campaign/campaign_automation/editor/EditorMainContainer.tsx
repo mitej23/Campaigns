@@ -664,13 +664,10 @@ const EditorMainContainer = () => {
         onConnect={onConnect}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        onLayout={onLayout}
       />
       <Separator orientation="vertical" />
-      <EditorSideComponentsContainer
-        onDragStart={onDragStart}
-        onLayout={onLayout}
-        onPublish={onPublish}
-      />
+      <EditorSideComponentsContainer onDragStart={onDragStart} />
     </div>
   );
 };

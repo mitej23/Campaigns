@@ -2,6 +2,7 @@ import {
   Background,
   Connection,
   ConnectionLineType,
+  ControlButton,
   Controls,
   Edge,
   EdgeChange,
@@ -14,6 +15,7 @@ import {
 } from "@xyflow/react";
 import { Dispatch, SetStateAction } from "react";
 import { nodeTypes } from "./components/NodeVariants";
+import { LayoutPanelTop } from "lucide-react";
 
 type EditorMainComponentTypes = {
   nodes: Node[];
@@ -33,6 +35,7 @@ type EditorMainComponentTypes = {
     clientX: number;
     clientY: number;
   }) => void;
+  onLayout: () => void;
 };
 
 const EditorMainComponent: React.FC<EditorMainComponentTypes> = ({
@@ -45,6 +48,7 @@ const EditorMainComponent: React.FC<EditorMainComponentTypes> = ({
   onConnect,
   onDragOver,
   onDrop,
+  onLayout,
 }) => {
   return (
     <div className="h-full flex-1 bg-gray-100">
@@ -66,7 +70,11 @@ const EditorMainComponent: React.FC<EditorMainComponentTypes> = ({
         {/* <Panel position="top-right">
           <div className="panel">Top right</div>
         </Panel> */}
-        <Controls />
+        <Controls>
+          <ControlButton onClick={() => onLayout()}>
+            <LayoutPanelTop strokeWidth={2} />
+          </ControlButton>
+        </Controls>
         <MiniMap zoomable pannable />
         <Background gap={12} size={1} />
       </ReactFlow>

@@ -24,6 +24,9 @@ import "@xyflow/react/dist/style.css";
 import dagre from "dagre";
 // import { v4 as uuidv4 } from "uuid";
 import { CustomNodeType } from "./types/EditorTypes";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const initialNodes: CustomNodeType[] = [
   {
@@ -99,7 +102,10 @@ const getLayoutedElements = (
   return { nodes: newNodes, edges };
 };
 
-const EditorMainContainer = () => {
+const EditorMainContainer: React.FC<{
+  campaignName: string | undefined;
+}> = ({ campaignName }) => {
+  const navigate = useNavigate();
   const { fitView } = useReactFlow();
   const [refInstance, setRefInstance] = useState<ReactFlowInstance | null>(
     null
@@ -653,22 +659,41 @@ const EditorMainContainer = () => {
   }, [nodes, fitView]);
 
   return (
-    <div className="flex flex-row w-screen flex-1">
-      <EditorMainComponent
-        nodes={nodes}
-        edges={edges}
-        setRefInstance={setRefInstance}
-        onBeforeDelete={onBeforeDelete}
-        handleNodesChange={handleNodesChange}
-        handleEdgesChange={handleEdgesChange}
-        onConnect={onConnect}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
-        onLayout={onLayout}
-      />
-      <Separator orientation="vertical" />
-      <EditorSideComponentsContainer onDragStart={onDragStart} />
-    </div>
+    <>
+      <div className="flex items-center justify-between px-6 py-3">
+        <div
+          className="flex items-center hover:cursor-pointer w-max"
+          onClick={() => navigate("/dashboard")}>
+          <ChevronLeft size={16} />
+          <p className="ml-4 ">{campaignName}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Button size={"xs"} variant={"outline"}>
+            Save
+          </Button>
+          <Button size={"xs"} onClick={onPublish}>
+            Publish
+          </Button>
+        </div>
+      </div>
+      <Separator />
+      <div className="flex flex-row w-screen flex-1">
+        <EditorMainComponent
+          nodes={nodes}
+          edges={edges}
+          setRefInstance={setRefInstance}
+          onBeforeDelete={onBeforeDelete}
+          handleNodesChange={handleNodesChange}
+          handleEdgesChange={handleEdgesChange}
+          onConnect={onConnect}
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+          onLayout={onLayout}
+        />
+        <Separator orientation="vertical" />
+        <EditorSideComponentsContainer onDragStart={onDragStart} />
+      </div>
+    </>
   );
 };
 

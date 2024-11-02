@@ -12,6 +12,14 @@ export type StartNodeProps = Node<
   "start"
 >;
 
+export type ConditionNodeProps = Node<
+  {
+    label: string;
+    connected?: boolean;
+  },
+  "start"
+>;
+
 export type DelayNodeProps = Node<
   {
     label: string;

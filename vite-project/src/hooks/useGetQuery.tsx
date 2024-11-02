@@ -27,6 +27,7 @@ const useGetQuery = (url: string, query: string, key: string) => {
 
       return response.json();
     },
+    staleTime: 1000 * 60 * 10, // 10 mins stale time
   });
   return {
     data,

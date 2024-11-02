@@ -1,9 +1,8 @@
-import { Separator } from "@/components/ui/separator";
 import useGetQuery from "@/hooks/useGetQuery";
-import { ChevronLeft, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useParams } from "react-router-dom";
+
 import EditorMainContainer from "./editor/EditorMainContainer";
 
 type Contact = {
@@ -27,7 +26,6 @@ type CampaignType = {
 };
 
 const AutomationBuilderEditor = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
   const { data, isPending } = useGetQuery(
     `/api/campaigns/${id}`,
@@ -54,22 +52,7 @@ const AutomationBuilderEditor = () => {
 
   return (
     <div className="flex flex-col h-screen w-screen">
-      <div className="flex items-center justify-between px-6 py-3">
-        <div
-          className="flex items-center hover:cursor-pointer w-max"
-          onClick={() => navigate("/dashboard")}>
-          <ChevronLeft size={16} />
-          <p className="ml-4 ">{campaignData?.name}</p>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <Button size={"xs"} variant={"outline"}>
-            Save
-          </Button>
-          <Button size={"xs"}>Publish</Button>
-        </div>
-      </div>
-      <Separator />
-      <EditorMainContainer />
+      <EditorMainContainer campaignName={campaignData?.name} />
     </div>
   );
 };

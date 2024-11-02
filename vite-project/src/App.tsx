@@ -64,7 +64,14 @@ function App() {
                   <Route path="/" element={<h1>Landing Page</h1>} />
                   <Route element={<ProtectedRoutes />}>
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/dashboard/:id" element={<Campaign />} />
+                    <Route
+                      path="/dashboard/:id"
+                      element={
+                        <ReactFlowProvider>
+                          <Campaign />
+                        </ReactFlowProvider>
+                      }
+                    />
                     <Route
                       path="/dashboard/:id/editor"
                       element={

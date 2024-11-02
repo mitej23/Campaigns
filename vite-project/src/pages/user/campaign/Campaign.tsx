@@ -124,7 +124,7 @@ const Campaign: React.FC = () => {
               //   onChange={(e) => setEmailSubject(e.target.value)}
             />
           </div>
-          <Tabs defaultValue="contacts" className="w-full">
+          <Tabs defaultValue="contacts" className="w-full flex flex-col flex-1">
             <TabsList className="flex justify-start h-auto p-0 bg-transparent border-b border-b-gray-300 rounded-none">
               {tabData.map((tab) => (
                 <TabsTrigger
@@ -138,7 +138,10 @@ const Campaign: React.FC = () => {
               ))}
             </TabsList>
             {tabData.map((tab) => (
-              <TabsContent key={tab.value} value={tab.value} className="mt-4">
+              <TabsContent
+                key={tab.value}
+                value={tab.value}
+                className="mt-4 flex flex-col data-[state=active]:flex-1">
                 {tab.content(data?.data)}
               </TabsContent>
             ))}

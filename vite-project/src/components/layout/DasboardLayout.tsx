@@ -6,7 +6,9 @@ const DasboardLayout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <div>
       <Sidebar />
-      <div className="p-12 ml-[220px]">{children}</div>
+      <div className="flex flex-col min-h-screen p-12 ml-[220px]">
+        {children}
+      </div>
     </div>
   );
 };

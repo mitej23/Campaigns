@@ -189,6 +189,29 @@ const updateCampaign = async (req, res) => {
   }
 }
 
+const saveEditor = async (req, res) => {
+  try {
+    const { automationFlowEditorData, campaignId } = req.body;
+    const { id } = req.user;
+
+    const [updatedCampaign] = await db.update(campaigns)
+      .set({ automationFlowEditorData })
+      .where(eq(campaigns.userId, id))
+      .where(eq(campaigns.id, campaignId))
+      .returning();
+
+    if (!updatedCampaign) {
+      return res.status(404).json({ error: 'Campaign not found' });
+    }
+
+    res.status(200).json({ message: 'Flow saved successfully', campaign: updatedCampaign });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 const publishCampaign = async (req, res) => {
   // check firstly whether the campaign emailAccountId is verified
   // check whether it is not already published.
@@ -281,4 +304,4 @@ const removeContact = async (req, res) => {
 }
 
 
-export { getAllCampaigns, addCampaign, updateCampaign, addContact, removeContact, getIdvCampaigns, addSomeContacts }
+export { getAllCampaigns, addCampaign, updateCampaign, saveEditor, addContact, removeContact, getIdvCampaigns, addSomeContacts }

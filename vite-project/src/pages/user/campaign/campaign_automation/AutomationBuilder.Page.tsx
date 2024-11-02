@@ -52,7 +52,11 @@ const AutomationBuilderEditor = () => {
 
   return (
     <div className="flex flex-col h-screen w-screen">
-      <EditorMainContainer campaignName={campaignData?.name} />
+      <EditorMainContainer
+        campaignName={campaignData?.name}
+        campaignId={id}
+        automationFlowEditorData={campaignData?.automationFlowEditorData}
+      />
     </div>
   );
 };

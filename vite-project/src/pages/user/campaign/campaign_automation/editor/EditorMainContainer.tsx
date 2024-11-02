@@ -25,9 +25,11 @@ import dagre from "dagre";
 // import { v4 as uuidv4 } from "uuid";
 import { CustomNodeType } from "./types/EditorTypes";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import usePostQuery from "@/hooks/usePostQuery";
+import { queryClient } from "@/App";
 
 const initialNodes: CustomNodeType[] = [
   {
@@ -105,7 +107,13 @@ const getLayoutedElements = (
 
 const EditorMainContainer: React.FC<{
   campaignName: string | undefined;
-}> = ({ campaignName }) => {
+  campaignId: string | undefined;
+  automationFlowEditorData: string | null | undefined;
+}> = ({ campaignName, campaignId, automationFlowEditorData }) => {
+  //  save-editor
+  const { mutate, isPending: isSaving } = usePostQuery(
+    "/api/campaigns/save-editor"
+  );
   const navigate = useNavigate();
   const { fitView } = useReactFlow();
   const [refInstance, setRefInstance] = useState<ReactFlowInstance | null>(
@@ -421,6 +429,37 @@ const EditorMainContainer: React.FC<{
     layoutApplied.current = true;
   }, [nodes, edges, setNodes, setEdges, isConnectedToStart]);
 
+  const onSave = () => {
+    // saving the instance
+    if (refInstance) {
+      const flow = refInstance.toObject();
+      mutate(
+        {
+          campaignId,
+          automationFlowEditorData: JSON.stringify(flow),
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Flow saved Successfully.",
+              description:
+                "You would be able to create automation for your campaign.",
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["campaign-details", campaignId],
+            });
+          },
+          onError: () => {
+            toast({
+              title: "Oops!! There was some issue while saving the flow",
+              description: "Please try again later..",
+            });
+          },
+        }
+      );
+    }
+  };
+
   const onPublish = () => {
     // check for nodes that are not connected to start trigger
 
@@ -683,20 +722,28 @@ const EditorMainContainer: React.FC<{
     }
   }, [nodes, fitView]);
 
-  console.log(nodes);
+  useEffect(() => {
+    if (automationFlowEditorData) {
+      const flow = JSON.parse(automationFlowEditorData);
+      if (flow) {
+        setNodes(flow.nodes || [initialNodes]);
+        setEdges(flow.edges || [initialEdges]);
+      }
+    }
+  }, [automationFlowEditorData, setEdges, setNodes]);
 
   return (
     <>
       <div className="flex items-center justify-between px-6 py-3">
         <div
           className="flex items-center hover:cursor-pointer w-max"
-          onClick={() => navigate("/dashboard")}>
+          onClick={() => navigate(`/dashboard/${campaignId}`)}>
           <ChevronLeft size={16} />
           <p className="ml-4 ">{campaignName}</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <Button size={"xs"} variant={"outline"}>
-            Save
+          <Button size={"xs"} variant={"outline"} onClick={onSave}>
+            {isSaving ? <Loader className="animate-spin" size={20} /> : "Save"}
           </Button>
           <Button size={"xs"} onClick={onPublish}>
             Publish

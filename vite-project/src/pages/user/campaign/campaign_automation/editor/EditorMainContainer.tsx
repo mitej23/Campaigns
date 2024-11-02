@@ -14,6 +14,7 @@ import {
   Node,
   OnBeforeDelete,
   OnNodesChange,
+  useViewport,
 } from "@xyflow/react";
 
 import { Separator } from "@/components/ui/separator";
@@ -55,10 +56,10 @@ const getNodeDimensions = (node: CustomNodeType) => {
   console.log(node.type);
 
   const typeDimensions: Record<string, { width: number; height: number }> = {
-    start: { width: 269 + padding, height: 76 + padding },
-    email: { width: 219 + padding, height: 76 + padding },
-    delay: { width: 251 + padding, height: 76 + padding },
-    condition: { width: 245 + padding, height: 76 + padding },
+    start: { width: 160 + padding, height: 40 + padding },
+    email: { width: 240 + padding, height: 115 + padding },
+    delay: { width: 240 + padding, height: 174 + padding },
+    condition: { width: 160 + padding, height: 40 + padding },
   };
 
   return typeDimensions[node.type] || defaultDimensions;
@@ -123,7 +124,8 @@ const EditorMainContainer: React.FC<{
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState(initialEdges);
   const isEdgesDeleted = useRef(false);
-  // const { zoom } = useViewport(); // Get current viewport
+  const { zoom } = useViewport(); // Get current viewport
+  console.log("zooom", zoom);
   // const [dragStartPosition, setDragStartPosition] = useState({ x: 0, y: 0 }); // Store drag start position
 
   const isConnectedToStart = useCallback(
@@ -765,7 +767,10 @@ const EditorMainContainer: React.FC<{
           onLayout={onLayout}
         />
         <Separator orientation="vertical" />
-        <EditorSideComponentsContainer onDragStart={onDragStart} />
+        <EditorSideComponentsContainer
+          onDragStart={onDragStart}
+          onLayout={onLayout}
+        />
       </div>
     </>
   );

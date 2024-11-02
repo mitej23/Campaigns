@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CustomHandle } from "../elements/CustomHandle";
-import { NodeProps, Position } from "@xyflow/react";
+import { NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { useEffect, useState } from "react";
 import { EmailNodeProps } from "../types/EditorTypes";
 import useGetQuery from "@/hooks/useGetQuery";
@@ -34,6 +34,7 @@ type EmailTypes = {
 };
 
 export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
+  const { setNodes } = useReactFlow();
   const { data } = props;
   const { data: emails, isPending } = useGetQuery(
     "/api/email-template",
@@ -41,8 +42,27 @@ export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
     "emailTemplates"
   );
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(data.templateId || "");
   const [emailList, setEmailList] = useState<EmailTypes[]>([]);
+
+  const handleSelectChange = (value: string) => {
+    const { id } = props;
+    setNodes((nodes) =>
+      nodes.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              templateId: value,
+            },
+          };
+        }
+
+        return node;
+      })
+    );
+  };
 
   useEffect(() => {
     if (!isPending) {
@@ -51,8 +71,6 @@ export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
       }
     }
   }, [isPending, emails]);
-
-  console.log(value);
 
   return (
     <div
@@ -75,7 +93,12 @@ export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
       <Separator className="border-black border-b-[1px]" />
       <div className="h-full flex flex-col gap-2 p-3">
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs font-medium">Select Email</Label>
+          <Label className="text-xs font-medium">
+            Select Email{" "}
+            {!value && (
+              <span className="text-red-600">(Email cannot be empty!!)</span>
+            )}
+          </Label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger
               asChild
@@ -84,7 +107,9 @@ export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="justify-between">
+                className={`justify-between font-normal ${
+                  !value ? "bg-red-50 border border-red-600" : ""
+                }`}>
                 {value
                   ? (() => {
                       const name = emailList.find((e) => e.id === value)?.name;
@@ -113,6 +138,7 @@ export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
                         key={e.id}
                         value={e.id}
                         onSelect={(currentValue) => {
+                          handleSelectChange(currentValue);
                           setValue(currentValue === value ? "" : currentValue);
                           setOpen(false);
                         }}>

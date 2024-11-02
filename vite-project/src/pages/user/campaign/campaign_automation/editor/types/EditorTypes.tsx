@@ -24,8 +24,8 @@ export type DelayNodeProps = Node<
   {
     label: string;
     connected?: boolean;
-    time: string;
-    format: string;
+    time?: string;
+    format?: string;
   },
   "start"
 >;
@@ -35,6 +35,7 @@ export type EmailNodeProps = Node<
     label: string;
     connected?: boolean;
     email: string;
+    templateId?: string;
   },
   "email"
 >;

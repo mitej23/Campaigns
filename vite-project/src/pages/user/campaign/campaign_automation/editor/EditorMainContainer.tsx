@@ -27,6 +27,7 @@ import { CustomNodeType } from "./types/EditorTypes";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 const initialNodes: CustomNodeType[] = [
   {
@@ -257,26 +258,41 @@ const EditorMainContainer: React.FC<{
           sourceNode.type === "start" &&
           !["delay", "email"].includes(targetNode.type)
         ) {
-          alert(
-            'A "start" node can only connect to a "delay" or "email" node.'
-          );
+          toast({
+            title: "Oops!!! You cannot attach to this node",
+            variant: "destructive",
+            description:
+              'A "start" node can only connect to a "delay" or "email" node.',
+          });
         }
         if (
           sourceNode.type === "delay" &&
           !["email", "condition"].includes(targetNode.type)
         ) {
-          alert(
-            'A "delay" node can only connect to an "email" or "condition" node.'
-          );
+          toast({
+            title: "Oops!!! You cannot attach to this node",
+            variant: "destructive",
+            description:
+              'A "delay" node can only connect to an "email" or "condition" node.',
+          });
         }
         if (
           sourceNode.type === "email" &&
           !["delay"].includes(targetNode.type)
         ) {
-          alert('An "email" node can only connect to a "delay" node.');
+          toast({
+            title: "Oops!!! You cannot attach to this node",
+            variant: "destructive",
+            description: 'An "email" node can only connect to a "delay" node.',
+          });
         }
         if (sourceNode.type === "condition" && targetNode.type !== "email") {
-          alert('A "condition" node can only connect to an "email" node.');
+          toast({
+            title: "Oops!!! You cannot attach to this node",
+            variant: "destructive",
+            description:
+              'A "condition" node can only connect to an "email" node.',
+          });
         }
       }
     },
@@ -422,12 +438,21 @@ const EditorMainContainer: React.FC<{
     });
 
     if (!isConnectedToStartCheck) {
-      alert("Cannot Save: Some nodes are not connected to start");
+      toast({
+        title: "Oops!!! Cannot publish",
+        variant: "destructive",
+        description: "Cannot publish: Some nodes are not connected to start",
+      });
       return;
     }
 
     if (!containsAtleastOneEmail) {
-      alert("Cannot Save: Must have atleast one email on trigger");
+      toast({
+        title: "Oops!!! Cannot publish",
+        variant: "destructive",
+        description: "Cannot publish: Must have atleast one email on trigger",
+      });
+
       return;
     }
 
@@ -657,6 +682,8 @@ const EditorMainContainer: React.FC<{
       layoutApplied.current = false;
     }
   }, [nodes, fitView]);
+
+  console.log(nodes);
 
   return (
     <>

@@ -45,7 +45,7 @@ export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
   const [value, setValue] = useState(data.templateId || "");
   const [emailList, setEmailList] = useState<EmailTypes[]>([]);
 
-  const handleSelectChange = (value: string) => {
+  const handleSelectChange = (inputData: string) => {
     const { id } = props;
     setNodes((nodes) =>
       nodes.map((node) => {
@@ -54,7 +54,7 @@ export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
             ...node,
             data: {
               ...node.data,
-              templateId: value,
+              templateId: inputData,
             },
           };
         }
@@ -138,7 +138,9 @@ export const EmailNode = (props: NodeProps<EmailNodeProps>) => {
                         key={e.id}
                         value={e.id}
                         onSelect={(currentValue) => {
-                          handleSelectChange(currentValue);
+                          handleSelectChange(
+                            currentValue === value ? "" : currentValue
+                          );
                           setValue(currentValue === value ? "" : currentValue);
                           setOpen(false);
                         }}>

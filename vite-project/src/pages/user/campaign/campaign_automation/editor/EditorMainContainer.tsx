@@ -14,9 +14,8 @@ import {
   Node,
   OnBeforeDelete,
   OnNodesChange,
-  useViewport,
 } from "@xyflow/react";
-
+import { v4 as uuidv4 } from "uuid";
 import { Separator } from "@/components/ui/separator";
 import EditorMainComponent from "./Editor.MainComponent";
 import EditorSideComponentsContainer from "./Editor.SideComponentsContainer";
@@ -24,7 +23,12 @@ import EditorSideComponentsContainer from "./Editor.SideComponentsContainer";
 import "@xyflow/react/dist/style.css";
 import dagre from "dagre";
 // import { v4 as uuidv4 } from "uuid";
-import { CustomNodeType } from "./types/EditorTypes";
+import {
+  CustomNodeType,
+  DelayNodeProps,
+  Email,
+  EmailNodeProps,
+} from "./types/EditorTypes";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -106,6 +110,23 @@ const getLayoutedElements = (
   return { nodes: newNodes, edges };
 };
 
+const getDelayNodeTime = (delayNode: DelayNodeProps) => {
+  const { time, format } = delayNode.data;
+  if (!time || !format) {
+    return 0;
+  }
+
+  const timeNum = parseInt(time);
+  let totMins = 0;
+  if (format === "hours") {
+    totMins = timeNum * 60; // Convert hours to minutes
+  } else if (format === "minutes") {
+    totMins = timeNum; // Already in minutes
+  }
+
+  return totMins;
+};
+
 const EditorMainContainer: React.FC<{
   campaignName: string | undefined;
   campaignId: string | undefined;
@@ -124,8 +145,7 @@ const EditorMainContainer: React.FC<{
   const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState(initialEdges);
   const isEdgesDeleted = useRef(false);
-  const { zoom } = useViewport(); // Get current viewport
-  console.log("zooom", zoom);
+  // const { zoom } = useViewport(); // Get current viewport
   // const [dragStartPosition, setDragStartPosition] = useState({ x: 0, y: 0 }); // Store drag start position
 
   const isConnectedToStart = useCallback(
@@ -497,165 +517,234 @@ const EditorMainContainer: React.FC<{
       return;
     }
 
-    // saving the instance
-    // if (refInstance) {
-    //   const flow = refInstance.toObject();
-    //   // console.log(flow)
-    // }
+    // check if nodes contain empty input values for email & delay
+    let emptyInputFound = false;
+    nodes.map((node) => {
+      if (node.type == "email" || node.type == "delay") {
+        if (node.type == "email") {
+          console.log(node.data);
+          if (!node.data.templateId || node.data.templateId == "") {
+            emptyInputFound = true;
+          }
+        } else {
+          if (
+            !node.data.format ||
+            node.data.format == "" ||
+            !node.data.time ||
+            node.data.time == ""
+          ) {
+            emptyInputFound = true;
+          }
+        }
+      }
+    });
 
-    // console.log(nodes, edges);
+    if (emptyInputFound) {
+      toast({
+        title: "Oops!!! Cannot publish",
+        variant: "destructive",
+        description: "Empty Input Found: Input cannot be empty",
+      });
+
+      return;
+    }
+
+    // Saving the current state of the editor
+    // onSave();
 
     // // Generate the JSON output
     // // Current issue is that is push the node inside the array even if it is nested.
 
-    // const emails = [];
-    // // let emailId = 1;
+    const emails: Email[] = [];
+    // let emailId = 1;
 
-    // const getNextNode = (nodeId: string) => {
-    //   const outgoingEdge = edges.find((e) => e.source === nodeId);
-    //   return outgoingEdge
-    //     ? nodes.find((n) => n.id === outgoingEdge.target)
-    //     : null;
-    // };
+    const getNextNode = (nodeId: string) => {
+      const outgoingEdge = edges.find((e) => e.source === nodeId);
+      return outgoingEdge
+        ? nodes.find((n) => n.id === outgoingEdge.target)
+        : null;
+    };
 
-    // const processEmailNode = (
-    //   emailNode,
-    //   parentEmailId = null,
-    //   accumulatedDelay = 0,
-    //   branch = null
-    // ) => {
-    //   const uniqueId = uuidv4();
-    //   const email = {
-    //     id: uniqueId,
-    //     subject: `Email ${uniqueId}`,
-    //     content: emailNode.data.content || `Content for email ${uniqueId}...`,
-    //     delay_hours: accumulatedDelay,
-    //     parent_email_id: parentEmailId,
-    //   };
+    const processEmailNode = (
+      emailNode: EmailNodeProps,
+      parentEmailId: string | null = null,
+      accumulatedDelay = 0,
+      branch: string | null = null
+    ): string | null => {
+      try {
+        const uniqueId = uuidv4();
+        if (!emailNode.data.templateId) {
+          throw new Error("templateId not found");
+        }
 
-    //   if (branch) {
-    //     email.branch = branch;
-    //   }
+        const email: Email = {
+          id: uniqueId,
+          templateId: emailNode.data.templateId,
+          delay_hours: accumulatedDelay,
+          parent_email_id: parentEmailId,
+        };
 
-    //   emails.push(email);
+        if (branch) {
+          email.branch = branch;
+        }
 
-    //   const nextNode = getNextNode(emailNode.id);
-    //   if (nextNode) {
-    //     if (nextNode.type === "delay") {
-    //       const delayHours = parseInt(nextNode.data.delay) || 24;
-    //       email.next_email_id = processNode(
-    //         getNextNode(nextNode.id),
-    //         email.id,
-    //         accumulatedDelay + delayHours,
-    //         branch
-    //       );
-    //     } else if (nextNode.type === "condition") {
-    //       email.condition = processConditionNode(
-    //         nextNode,
-    //         email.id,
-    //         accumulatedDelay
-    //       );
-    //       // Remove next_email_id for emails with conditions
-    //       delete email.next_email_id;
-    //     } else {
-    //       email.next_email_id = processNode(
-    //         nextNode,
-    //         email.id,
-    //         accumulatedDelay,
-    //         branch
-    //       );
-    //     }
-    //   }
+        emails.push(email);
 
-    //   return email.id;
-    // };
+        accumulatedDelay = 0;
 
-    // const processConditionNode = (
-    //   conditionNode,
-    //   parentEmailId,
-    //   accumulatedDelay
-    // ) => {
-    //   const trueEdge = edges.find(
-    //     (e) => e.source === conditionNode.id && e.sourceHandle === "yes"
-    //   );
-    //   const falseEdge = edges.find(
-    //     (e) => e.source === conditionNode.id && e.sourceHandle === "no"
-    //   );
+        const nextNode = getNextNode(emailNode.id);
+        if (nextNode) {
+          if (nextNode.type === "delay") {
+            const delayMins = getDelayNodeTime(nextNode as DelayNodeProps);
+            const newNextNode = getNextNode(nextNode.id);
+            if (!newNextNode) throw new Error("Next Node cannot be empty");
 
-    //   const processBranch = (edge, branchType) => {
-    //     if (!edge) return null;
-    //     const nextNode = nodes.find((n) => n.id === edge.target);
-    //     if (nextNode) {
-    //       return processNode(
-    //         nextNode,
-    //         parentEmailId,
-    //         accumulatedDelay,
-    //         branchType
-    //       );
-    //     }
-    //     return null;
-    //   };
+            const newNextNodeId = processNode(
+              newNextNode,
+              email.id,
+              accumulatedDelay + delayMins,
+              branch
+            );
+            if (!newNextNodeId) throw new Error("Next Node ID cannot be empty");
 
-    //   return {
-    //     type: conditionNode.data.conditionType || "opened",
-    //     true_branch: { email_id: processBranch(trueEdge, "true") },
-    //     false_branch: { email_id: processBranch(falseEdge, "false") },
-    //   };
-    // };
+            email.next_email_id = newNextNodeId;
+          } else if (nextNode.type === "condition") {
+            const processedConditionNode = processConditionNode(
+              nextNode,
+              email.id,
+              accumulatedDelay
+            );
+            if (!processedConditionNode)
+              throw new Error("Condition Node result cannot be empty");
 
-    // const processNode = (
-    //   node,
-    //   parentEmailId = null,
-    //   accumulatedDelay = 0,
-    //   branch = null
-    // ) => {
-    //   if (!node) return null;
+            email.condition = processedConditionNode;
+            delete email.next_email_id;
+          } else {
+            const nextEmailId = processNode(
+              nextNode,
+              email.id,
+              accumulatedDelay,
+              branch
+            );
+            if (!nextEmailId) throw new Error("Next Node ID cannot be empty");
+            email.next_email_id = nextEmailId;
+          }
+        }
 
-    //   switch (node.type) {
-    //     case "email":
-    //       return processEmailNode(
-    //         node,
-    //         parentEmailId,
-    //         accumulatedDelay,
-    //         branch
-    //       );
-    //     case "delay": {
-    //       const delayHours = parseInt(node.data.delay) || 24;
-    //       return processNode(
-    //         getNextNode(node.id),
-    //         parentEmailId,
-    //         accumulatedDelay + delayHours,
-    //         branch
-    //       );
-    //     }
-    //     case "condition": {
-    //       const lastEmail = emails[emails.length - 1];
-    //       lastEmail.condition = processConditionNode(
-    //         node,
-    //         lastEmail.id,
-    //         accumulatedDelay
-    //       );
-    //       // Remove next_email_id for emails with conditions
-    //       delete lastEmail.next_email_id;
-    //       return lastEmail.id;
-    //     }
-    //     default:
-    //       console.warn(`Unexpected node type: ${node.type}`);
-    //       return null;
-    //   }
-    // };
+        return email.id;
+      } catch (error) {
+        console.error("Error processing email node:", error);
+        return null;
+      }
+    };
 
-    // // Start processing from the 'start' node
-    // const startNode = nodes.find((n) => n.type === "start");
-    // const firstNode = getNextNode(startNode.id);
-    // if (firstNode) {
-    //   processNode(firstNode);
-    // } else {
-    //   console.warn("No node connected to the start node");
-    // }
+    const processConditionNode = (
+      conditionNode: CustomNodeType,
+      parentEmailId: string,
+      accumulatedDelay: number
+    ): {
+      type: string;
+      true_branch: {
+        email_id: string | null;
+      };
+      false_branch: {
+        email_id: string | null;
+      };
+    } => {
+      const trueEdge = edges.find(
+        (e) => e.source === conditionNode.id && e.sourceHandle === "yes"
+      );
+      const falseEdge = edges.find(
+        (e) => e.source === conditionNode.id && e.sourceHandle === "no"
+      );
 
-    // const output = { emails };
-    // console.log(JSON.stringify(output, null, 2));
+      const processBranch = (
+        edge: Edge | undefined,
+        branchType: string | null
+      ): string | null => {
+        if (!edge) return null;
+        const nextNode = nodes.find((n) => n.id === edge.target);
+        if (nextNode) {
+          return processNode(
+            nextNode,
+            parentEmailId,
+            accumulatedDelay,
+            branchType
+          );
+        }
+        return null;
+      };
+
+      return {
+        type: (conditionNode.data.conditionType as string) || "opened",
+        true_branch: { email_id: processBranch(trueEdge, "true") },
+        false_branch: { email_id: processBranch(falseEdge, "false") },
+      };
+    };
+
+    const processNode = (
+      node: CustomNodeType,
+      parentEmailId: string | null = null,
+      accumulatedDelay = 0,
+      branch: string | null = null
+    ): string | null => {
+      if (!node) return null;
+
+      try {
+        switch (node.type) {
+          case "email":
+            return processEmailNode(
+              node as EmailNodeProps,
+              parentEmailId,
+              accumulatedDelay,
+              branch
+            );
+          case "delay": {
+            const delayMins = getDelayNodeTime(node as DelayNodeProps);
+            const nextNode = getNextNode(node.id);
+            if (!nextNode) throw new Error("Next Node cannot be empty");
+            return processNode(
+              nextNode,
+              parentEmailId,
+              accumulatedDelay + delayMins,
+              branch
+            );
+          }
+          case "condition": {
+            const lastEmail = emails[emails.length - 1];
+            if (!lastEmail) {
+              throw new Error("No previous email found for condition node.");
+            }
+            lastEmail.condition = processConditionNode(
+              node,
+              lastEmail.id,
+              accumulatedDelay
+            );
+            // Remove next_email_id for emails with conditions
+            delete lastEmail.next_email_id;
+            return lastEmail.id;
+          }
+          default:
+            throw new Error(`Unexpected node type: ${node.type}`); // Throw error instead of warning
+        }
+      } catch (error) {
+        console.error("Error processing node:", error);
+        return null; // Or handle the error differently
+      }
+    };
+
+    // Start processing from the 'start' node
+    const startNode = nodes.find((n) => n.type === "start");
+    if (!startNode) return console.error("Start Node is not present");
+    const firstNode = getNextNode(startNode.id);
+    if (firstNode) {
+      processNode(firstNode);
+    } else {
+      console.warn("No node connected to the start node");
+    }
+
+    const output = { emails };
+    console.log(JSON.stringify(output, null, 2));
   };
 
   const handleNodesChange: OnNodesChange<Node> = useCallback(

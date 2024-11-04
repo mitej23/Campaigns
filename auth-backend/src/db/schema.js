@@ -42,7 +42,7 @@ export const contacts = pgTable('contacts', {
 export const campaigns = pgTable('campaigns', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),
-  status: text('status').notNull(),
+  status: text('status').notNull(), // Unpublished | published
   automationFlowEditorData: text('automation_flow_editor_data'),
   userId: uuid('user_id').notNull().references(() => users.id),
   emailAccountsId: uuid('email_accounts_id').notNull().references(() => emailAccounts.id),
@@ -93,7 +93,7 @@ export const emailQueue = pgTable('email_queue', {
   contactId: uuid('contact_id').notNull().references(() => contacts.id),
   emailId: uuid('email_id').notNull().references(() => emails.id),
   scheduledTime: timestamp('scheduled_time').notNull(),
-  status: text('status').notNull(),
+  status: text('status').notNull(), // pending
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

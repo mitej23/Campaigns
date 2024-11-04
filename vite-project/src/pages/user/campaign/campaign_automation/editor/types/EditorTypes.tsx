@@ -43,16 +43,16 @@ export type EmailNodeProps = Node<
 export interface Email {
   id: string;
   templateId: string;
-  delay_hours: number;
-  parent_email_id: string | null;
-  next_email_id?: string | null; // Optional in some cases
+  delayHours: number;
+  parentEmailId: string | null;
+  nextEmailId?: string | null; // Optional in some cases
   condition?: {
     type: string;
-    true_branch: {
-      email_id: string | null;
+    trueBranch: {
+      emailId: string | null;
     };
-    false_branch: {
-      email_id: string | null;
+    falseBranch: {
+      emailId: string | null;
     };
   };
   branch?: string; // Optional, only present in some cases

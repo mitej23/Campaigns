@@ -136,6 +136,9 @@ const EditorMainContainer: React.FC<{
   const { mutate, isPending: isSaving } = usePostQuery(
     "/api/campaigns/save-editor"
   );
+  const { mutate: publishCampaign, isPending: isPublishing } = usePostQuery(
+    "/api/campaigns/publish-campaign"
+  );
   const navigate = useNavigate();
   const { fitView } = useReactFlow();
   const [refInstance, setRefInstance] = useState<ReactFlowInstance | null>(
@@ -550,7 +553,6 @@ const EditorMainContainer: React.FC<{
     }
 
     // Saving the current state of the editor
-    // onSave();
 
     // // Generate the JSON output
     // // Current issue is that is push the node inside the array even if it is nested.
@@ -580,8 +582,8 @@ const EditorMainContainer: React.FC<{
         const email: Email = {
           id: uniqueId,
           templateId: emailNode.data.templateId,
-          delay_hours: accumulatedDelay,
-          parent_email_id: parentEmailId,
+          delayHours: accumulatedDelay,
+          parentEmailId: parentEmailId,
         };
 
         if (branch) {
@@ -607,7 +609,7 @@ const EditorMainContainer: React.FC<{
             );
             if (!newNextNodeId) throw new Error("Next Node ID cannot be empty");
 
-            email.next_email_id = newNextNodeId;
+            email.nextEmailId = newNextNodeId;
           } else if (nextNode.type === "condition") {
             const processedConditionNode = processConditionNode(
               nextNode,
@@ -618,7 +620,7 @@ const EditorMainContainer: React.FC<{
               throw new Error("Condition Node result cannot be empty");
 
             email.condition = processedConditionNode;
-            delete email.next_email_id;
+            delete email.nextEmailId;
           } else {
             const nextEmailId = processNode(
               nextNode,
@@ -627,7 +629,7 @@ const EditorMainContainer: React.FC<{
               branch
             );
             if (!nextEmailId) throw new Error("Next Node ID cannot be empty");
-            email.next_email_id = nextEmailId;
+            email.nextEmailId = nextEmailId;
           }
         }
 
@@ -644,11 +646,11 @@ const EditorMainContainer: React.FC<{
       accumulatedDelay: number
     ): {
       type: string;
-      true_branch: {
-        email_id: string | null;
+      trueBranch: {
+        emailId: string | null;
       };
-      false_branch: {
-        email_id: string | null;
+      falseBranch: {
+        emailId: string | null;
       };
     } => {
       const trueEdge = edges.find(
@@ -677,8 +679,8 @@ const EditorMainContainer: React.FC<{
 
       return {
         type: (conditionNode.data.conditionType as string) || "opened",
-        true_branch: { email_id: processBranch(trueEdge, "true") },
-        false_branch: { email_id: processBranch(falseEdge, "false") },
+        trueBranch: { emailId: processBranch(trueEdge, "true") },
+        falseBranch: { emailId: processBranch(falseEdge, "false") },
       };
     };
 
@@ -720,8 +722,8 @@ const EditorMainContainer: React.FC<{
               lastEmail.id,
               accumulatedDelay
             );
-            // Remove next_email_id for emails with conditions
-            delete lastEmail.next_email_id;
+            // Remove nextEmailId for emails with conditions
+            delete lastEmail.nextEmailId;
             return lastEmail.id;
           }
           default:
@@ -742,9 +744,34 @@ const EditorMainContainer: React.FC<{
     } else {
       console.warn("No node connected to the start node");
     }
+    if (refInstance) {
+      const flow = refInstance.toObject();
 
-    const output = { emails };
-    console.log(JSON.stringify(output, null, 2));
+      publishCampaign(
+        {
+          campaignId,
+          emails,
+          automationFlowEditorData: JSON.stringify(flow),
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Flow published Successfully.",
+              description: "Emails would now automatically sent.",
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["campaign-details", campaignId],
+            });
+          },
+          onError: () => {
+            toast({
+              title: "Oops!! There was some issue while saving the flow",
+              description: "Please try again later..",
+            });
+          },
+        }
+      );
+    }
   };
 
   const handleNodesChange: OnNodesChange<Node> = useCallback(
@@ -837,7 +864,11 @@ const EditorMainContainer: React.FC<{
             {isSaving ? <Loader className="animate-spin" size={20} /> : "Save"}
           </Button>
           <Button size={"xs"} onClick={onPublish}>
-            Publish
+            {isPublishing ? (
+              <Loader className="animate-spin" size={20} />
+            ) : (
+              "Publish"
+            )}
           </Button>
         </div>
       </div>

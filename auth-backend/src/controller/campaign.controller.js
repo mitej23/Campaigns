@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { campaignContact, campaigns, contacts, emailAccounts } from "../db/schema.js";
+import { createEmailSequence, getContactsForCampaign, scheduleEmailSending, scheduleInitialEmails } from "../utils/emailsScheduling.js";
 
 const getAllCampaigns = async (req, res) => {
   try {
@@ -212,9 +213,77 @@ const saveEditor = async (req, res) => {
   }
 }
 
+// check whether it is not already published.
 const publishCampaign = async (req, res) => {
-  // check firstly whether the campaign emailAccountId is verified
-  // check whether it is not already published.
+  try {
+    const { emails, automationFlowEditorData, campaignId } = req.body;
+    const { id } = req.user;
+
+
+    const [updatedCampaign] = await db.update(campaigns)
+      .set({ automationFlowEditorData })
+      .where(eq(campaigns.userId, id))
+      .where(eq(campaigns.id, campaignId))
+      .returning();
+
+    if (!updatedCampaign) {
+      return res.status(404).json({ error: 'Campaign not found' });
+    }
+
+    // check firstly whether the campaign emailAccountId is verified
+    const currentCampaign = await db
+      .select({
+        // Campaign fields
+        id: campaigns.id,
+        name: campaigns.name,
+        status: campaigns.status,
+        emailId: emailAccounts.emailId,
+        emailStatus: emailAccounts.status,
+      })
+      .from(campaigns)
+      .leftJoin(
+        emailAccounts,
+        eq(emailAccounts.id, campaigns.emailAccountsId)
+      )
+      .where(eq(campaigns.userId, id))
+      .where(eq(campaigns.id, campaignId))
+
+    // Check if already published
+    if (currentCampaign[0].status === 'published') {
+      return res.status(400).json({ error: 'Campaign is already published' });
+    }
+
+
+    if (currentCampaign[0].emailStatus != "Success") {
+      return res.status(500).json({ message: 'Email Verification Pending. Go to your email client and find email from aws' });
+    }
+
+    // Email Scheduling
+
+    // Create the email sequence
+    await createEmailSequence(campaignId, emails);
+
+    // Schedule the initial emails for all contacts
+    const contacts = await getContactsForCampaign(campaignId);
+    await scheduleInitialEmails(emails, campaignId, contacts.map(c => c.id));
+
+    await db.update(campaigns)
+      .set({ status: 'Published' })
+      .where(eq(campaigns.userId, id))
+      .where(eq(campaigns.id, campaignId))
+      .returning();
+
+    // // Schedule the email sending process
+    // scheduleEmailSending( campaignId);
+    // });
+
+
+    res.status(200).json({ message: 'Flow published successfully' });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({ error: 'Internal server error' });
+  }
 }
 
 const addContact = async (req, res) => {
@@ -304,4 +373,4 @@ const removeContact = async (req, res) => {
 }
 
 
-export { getAllCampaigns, addCampaign, updateCampaign, saveEditor, addContact, removeContact, getIdvCampaigns, addSomeContacts }
+export { getAllCampaigns, addCampaign, updateCampaign, saveEditor, addContact, removeContact, getIdvCampaigns, addSomeContacts, publishCampaign }

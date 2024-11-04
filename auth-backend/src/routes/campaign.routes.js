@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { verifyJWT } from '../middleware/auth.middleware.js';
-import { addCampaign, addContact, addSomeContacts, getAllCampaigns, getIdvCampaigns, removeContact, saveEditor, updateCampaign } from '../controller/campaign.controller.js';
+import { addCampaign, addContact, addSomeContacts, getAllCampaigns, getIdvCampaigns, publishCampaign, removeContact, saveEditor, updateCampaign } from '../controller/campaign.controller.js';
 
 
 const router = Router()
@@ -13,6 +13,7 @@ router.post('/add-contact', verifyJWT, addContact)
 router.post('/add-some-contact', verifyJWT, addSomeContacts)
 router.post('/remove-contact', verifyJWT, removeContact)
 router.post('/save-editor', verifyJWT, saveEditor)
+router.post('/publish-campaign', verifyJWT, publishCampaign)
 
 
 

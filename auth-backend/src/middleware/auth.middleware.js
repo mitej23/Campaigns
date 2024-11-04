@@ -5,9 +5,6 @@ import { eq } from 'drizzle-orm';
 
 export const verifyJWT = async (req, res, next) => {
   try {
-    console.log("requeset")
-    console.log(req.cookies)
-    console.log(req.header('Authorization'))
     const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
     if (!token) {
       return res.status(401).json({ "message": "Unauthorized request" })

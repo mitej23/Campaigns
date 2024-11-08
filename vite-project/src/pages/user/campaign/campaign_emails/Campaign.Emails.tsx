@@ -1,6 +1,6 @@
 import { Email } from "@/types/CampaignTypes";
 
-const CampaignEmails: React.FC<{ id: string | undefined; emails: Email }> = ({
+const CampaignEmails: React.FC<{ id: string | undefined; emails: Email[] }> = ({
   id,
   emails,
 }) => {

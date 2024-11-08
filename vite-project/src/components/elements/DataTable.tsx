@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronLeft, ChevronRight, Loader } from "lucide-react";
-import React, { useState } from "react";
+import React, { ReactElement, useState } from "react";
 // import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -26,6 +26,8 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   loading: boolean;
+  filterPlaceholder: string;
+  HeaderComponents?: ReactElement;
   DataEmptyComponent: React.FC;
   isSelection?: boolean;
   paginationCount?: number;
@@ -38,6 +40,8 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   loading,
+  filterPlaceholder,
+  HeaderComponents,
   DataEmptyComponent,
   isSelection = false,
   rowSelection = {},
@@ -78,13 +82,16 @@ export function DataTable<TData, TValue>({
         </div>
       ) : data.length > 0 ? (
         <div>
-          <div className="flex max-w-[50%]">
-            <Input
-              placeholder="Filter emails..."
-              value={globalFilter ?? ""}
-              onChange={(event) => setGlobalFilter(event.target.value)}
-              className="max-w-sm"
-            />
+          <div className="flex justify-between">
+            <div className="flex max-w-[50%]">
+              <Input
+                placeholder={filterPlaceholder}
+                value={globalFilter ?? ""}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                className="max-w-sm"
+              />
+            </div>
+            {HeaderComponents && HeaderComponents}
           </div>
           <div className="rounded-md border mt-4">
             <Table>

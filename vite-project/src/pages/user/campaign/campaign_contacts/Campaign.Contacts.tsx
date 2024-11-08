@@ -30,30 +30,31 @@ const CampaignContacts = ({
   const { setOpen } = useModal();
 
   return (
-    <>
-      <div className="flex items-end">
-        <Button
-          size={"sm"}
-          type="submit"
-          className="w-max ml-auto"
-          onClick={() =>
-            setOpen(
-              <AddContactsToCampaign
-                id={campaignId}
-                disableRowWithThisData={data.map(({ id }) => id)}
-              />
-            )
-          }>
-          Add Contacts
-        </Button>
-      </div>
+    <div className="pt-4">
       <DataTable
         columns={columns}
         data={data}
         loading={false}
+        HeaderComponents={
+          <Button
+            size={"sm"}
+            type="submit"
+            className="w-max ml-auto"
+            onClick={() =>
+              setOpen(
+                <AddContactsToCampaign
+                  id={campaignId}
+                  disableRowWithThisData={data.map(({ id }) => id)}
+                />
+              )
+            }>
+            Add Contacts
+          </Button>
+        }
+        filterPlaceholder="Filter Contacts..."
         DataEmptyComponent={DataEmptyComponent}
       />
-    </>
+    </div>
   );
 };
 

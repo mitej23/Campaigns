@@ -81,7 +81,7 @@ const Dashboard = () => {
                       <CardTitle className="text-lg">{name}</CardTitle>
                       <p
                         className={`w-max py-[0.125rem] px-[0.35rem] rounded-full ${
-                          status === " published"
+                          status === "Published"
                             ? "text-green-500 border-green-500 bg-green-100 "
                             : "text-yellow-500 border-yellow-500 bg-yellow-100"
                         }  text-[0.675rem] border  `}>

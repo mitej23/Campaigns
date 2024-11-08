@@ -67,7 +67,7 @@ const CampaignAutomationBuilder = ({
   if (!automationFlowEditorData) return <DataEmptyComponent />;
 
   return (
-    <div className="h-[30rem] border rounded-md">
+    <div className="h-[30rem] border rounded-md mt-4">
       {loading ? (
         <div className="h-full w-full flex items-center justify-center">
           <Loader className="animate-spin" size={20} />

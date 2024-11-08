@@ -35,6 +35,7 @@ const Contacts = () => {
         columns={columns}
         data={data?.data}
         loading={isPending}
+        filterPlaceholder="Filter Contacts..."
         DataEmptyComponent={DataEmptyComponent}
       />
     </DasboardLayout>

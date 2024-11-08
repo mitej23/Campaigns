@@ -38,6 +38,7 @@ const EmailTemplate = () => {
         columns={columns}
         data={data?.data}
         loading={isPending}
+        filterPlaceholder="Filter Templates..."
         DataEmptyComponent={DataEmptyComponent}
       />
     </DasboardLayout>

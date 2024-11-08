@@ -39,6 +39,7 @@ const Accounts = () => {
         columns={columns}
         data={data?.accounts}
         loading={isPending}
+        filterPlaceholder="Filter Accounts..."
         DataEmptyComponent={DataEmptyComponent}
       />
     </DasboardLayout>

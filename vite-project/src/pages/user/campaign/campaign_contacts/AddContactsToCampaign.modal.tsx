@@ -82,6 +82,7 @@ const AddContactsToCampaign: React.FC<{
           columns={columns}
           data={data?.data}
           loading={isPending}
+          filterPlaceholder="Filter Contacts..."
           DataEmptyComponent={DataEmptyComponent}
           isSelection={true}
           paginationCount={4}

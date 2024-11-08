@@ -1,5 +1,3 @@
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import DasboardLayout from "@/components/layout/DasboardLayout";
 import { ChevronLeft, Loader } from "lucide-react";
@@ -8,25 +6,14 @@ import useGetQuery from "@/hooks/useGetQuery";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import CampaignContacts from "./campaign_contacts/Campaign.Contacts";
 import CampaignAutomationBuilder from "./campaign_automation/Campaign.AutomationBuilder.TabContainer";
+import CampaignSettings from "./campaign_settings/Campaign.Settings";
+import CampaignEmails from "./campaign_emails/Campaign.Emails";
+import { Campaign as CampaignType } from "@/types/CampaignTypes";
 
-type Contact = {
+type ContactsTypeDTO = {
   id: string;
   name: string;
   email: string;
-};
-
-type EmailAccount = {
-  emailId: string;
-};
-
-type CampaignType = {
-  id: string;
-  name: string;
-  status: string;
-  contacts: Contact[];
-  createdAt: string;
-  emailAccount: EmailAccount;
-  automationFlowEditorData: string | null;
 };
 
 const Campaign: React.FC = () => {
@@ -49,11 +36,27 @@ const Campaign: React.FC = () => {
 
   const tabData = [
     {
+      value: "emails",
+      label: "Emails",
+      content: (data: CampaignType) => (
+        <CampaignEmails id={id} emails={data?.emails || []} />
+      ),
+    },
+    {
       value: "contacts",
       label: "Contacts",
-      content: (data: CampaignType) => (
-        <CampaignContacts data={data?.contacts} campaignId={id || ""} />
-      ),
+      content: (data: CampaignType) => {
+        const modData = data?.campaignContacts.map((c) => {
+          const container = {} as ContactsTypeDTO;
+          container["id"] = c.id;
+          container["name"] = c.user.name;
+          container["email"] = c.user.email;
+
+          return container;
+        });
+
+        return <CampaignContacts data={modData || []} campaignId={id || ""} />;
+      },
     },
     {
       value: "automation_builder",
@@ -61,6 +64,16 @@ const Campaign: React.FC = () => {
       content: (data: CampaignType) => (
         <CampaignAutomationBuilder
           automationFlowEditorData={data?.automationFlowEditorData}
+        />
+      ),
+    },
+    {
+      value: "settings",
+      label: "Settings",
+      content: (data: CampaignType) => (
+        <CampaignSettings
+          name={data?.name}
+          email={data?.emailAccount?.emailId}
         />
       ),
     },
@@ -78,7 +91,7 @@ const Campaign: React.FC = () => {
       <div
         className="flex items-center mb-4 hover:cursor-pointer w-max"
         onClick={() => navigate("/dashboard")}>
-        <ChevronLeft size={18} />{" "}
+        <ChevronLeft size={16} />{" "}
         <p className="ml-2 hover:underline underline-offset-2">Back</p>
       </div>
       {isPending ? (
@@ -87,12 +100,12 @@ const Campaign: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="flex flex-row items-end justify-between mb-8">
-            <h1 className="text-2xl font-semibold">Campaign Details</h1>
+          <div className="flex flex-row items-end justify-between mb-4">
+            <h1 className="text-xl font-semibold">Campaign Details</h1>
             <div>
               <p
                 className={` w-max font-semibold py-[0.25rem] px-[0.45rem] rounded-full ${
-                  campaignData?.status === "published"
+                  campaignData?.status === "Published"
                     ? "text-green-500 border-green-500 bg-green-100 "
                     : "text-yellow-500 border-yellow-500 bg-yellow-100"
                 }  text-[0.675rem] border  `}>
@@ -100,31 +113,7 @@ const Campaign: React.FC = () => {
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-[auto_1fr] items-baseline gap-4 mb-8">
-            <Label htmlFor="name" className="text-right">
-              Campaign Name
-            </Label>
-            <Input
-              id="name"
-              placeholder="Enter template name..."
-              className="max-w-md"
-              value={campaignData?.name || ""}
-              readOnly
-              //   onChange={(e) => setTemplateName(e.target.value)}
-            />
-            <Label htmlFor="name" className="text-right">
-              Campaign Email
-            </Label>
-            <Input
-              id="name"
-              placeholder="Enter subject..."
-              className="max-w-md"
-              value={campaignData?.emailAccount?.emailId || ""}
-              readOnly
-              //   onChange={(e) => setEmailSubject(e.target.value)}
-            />
-          </div>
-          <Tabs defaultValue="contacts" className="w-full flex flex-col flex-1">
+          <Tabs defaultValue="emails" className="w-full flex flex-col flex-1">
             <TabsList className="flex justify-start h-auto p-0 bg-transparent border-b border-b-gray-300 rounded-none">
               {tabData.map((tab) => (
                 <TabsTrigger
@@ -141,7 +130,7 @@ const Campaign: React.FC = () => {
               <TabsContent
                 key={tab.value}
                 value={tab.value}
-                className="mt-4 flex flex-col data-[state=active]:flex-1">
+                className="flex flex-col data-[state=active]:flex-1">
                 {tab.content(data?.data)}
               </TabsContent>
             ))}

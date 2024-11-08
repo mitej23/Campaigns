@@ -12,6 +12,7 @@ export const users = pgTable('users', {
   // Add other fields necessary for JWT authentication if needed
 });
 
+// emails attached using aws ses
 export const emailAccounts = pgTable('email_accounts', {
   id: uuid('id').defaultRandom().primaryKey(),
   emailId: text('email_id').notNull(),
@@ -130,3 +131,136 @@ export const emailOpens = pgTable('email_opens', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
+
+// Relations
+
+import { relations } from 'drizzle-orm';
+
+export const usersRelations = relations(users, ({ many }) => ({
+  emailAccounts: many(emailAccounts),
+  contacts: many(contacts),
+  campaigns: many(campaigns),
+  emailTemplates: many(emailTemplates),
+}));
+
+export const emailAccountsRelations = relations(emailAccounts, ({ one }) => ({
+  user: one(users, {
+    fields: [emailAccounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const contactsRelations = relations(contacts, ({ one, many }) => ({
+  user: one(users, {
+    fields: [contacts.usersId],
+    references: [users.id],
+  }),
+  campaignContacts: many(campaignContact)
+}));
+
+export const campaignsRelations = relations(campaigns, ({ one, many }) => ({
+  user: one(users, {
+    fields: [campaigns.userId],
+    references: [users.id],
+  }),
+  emailAccount: one(emailAccounts, {
+    fields: [campaigns.emailAccountsId],
+    references: [emailAccounts.id],
+  }),
+  emails: many(emails),
+  campaignContacts: many(campaignContact)
+}));
+
+export const campaignContactRelations = relations(campaignContact, ({ one }) => ({
+  contact: one(contacts, {
+    fields: [campaignContact.contactId],
+    references: [contacts.id],
+  }),
+  campaign: one(campaigns, {
+    fields: [campaignContact.campaignId],
+    references: [campaigns.id],
+  }),
+  user: one(users, {
+    fields: [campaignContact.userId],
+    references: [users.id],
+  })
+}));
+
+export const emailTemplatesRelations = relations(emailTemplates, ({ one }) => ({
+  user: one(users, {
+    fields: [emailTemplates.userId],
+    references: [users.id],
+  }),
+}));
+
+// Email Relations
+
+export const emailsRelations = relations(emails, ({ one, many }) => ({
+  campaign: one(campaigns, {
+    fields: [emails.campaignId],
+    references: [campaigns.id],
+  }),
+  template: one(emailTemplates, {
+    fields: [emails.templateId],
+    references: [emailTemplates.id],
+  }),
+  parentEmail: one(emails, {
+    fields: [emails.parentEmailId],
+    references: [emails.id],
+  }),
+  emailConditions: many(emailConditions, { relationName: 'emailConditions' }),
+  emailQueue: many(emailQueue),
+  emailSendQueue: many(emailSendQueue),
+  emailOpens: many(emailOpens)
+}));
+
+export const emailQueueRelations = relations(emailQueue, ({ one }) => ({
+  contact: one(contacts, {
+    fields: [emailQueue.contactId],
+    references: [contacts.id],
+  }),
+  email: one(emails, {
+    fields: [emailQueue.emailId],
+    references: [emails.id],
+  }),
+}));
+
+export const emailConditionsRelations = relations(emailConditions, ({ one }) => ({
+  email: one(emails, {
+    fields: [emailConditions.emailId],
+    references: [emails.id],
+    relationName: 'emailConditions'
+  }),
+  trueEmail: one(emails, {
+    fields: [emailConditions.trueEmailId],
+    references: [emails.id],
+    relationName: 'trueEmail'
+  }),
+  falseEmail: one(emails, {
+    fields: [emailConditions.falseEmailId],
+    references: [emails.id],
+    relationName: 'falseEmail'
+  }),
+}));
+
+export const emailSendQueueRelations = relations(emailSendQueue, ({ one }) => ({
+  contact: one(contacts, {
+    fields: [emailSendQueue.contactId],
+    references: [contacts.id],
+  }),
+  email: one(emails, {
+    fields: [emailSendQueue.emailId],
+    references: [emails.id],
+  })
+}));
+
+export const emailOpensRelations = relations(emailOpens, ({ one }) => ({
+  contact: one(contacts, {
+    fields: [emailOpens.contactId],
+    references: [contacts.id],
+  }),
+  email: one(emails, {
+    fields: [emailOpens.emailId],
+    references: [emails.id],
+  })
+}));

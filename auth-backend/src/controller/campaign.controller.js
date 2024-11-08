@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../db/index.js";
-import { campaignContact, campaigns, contacts, emailAccounts } from "../db/schema.js";
+import { campaignContact, campaigns, contacts, emailAccounts, emailConditions, emails, emailTemplates } from "../db/schema.js";
 import { createEmailSequence, getContactsForCampaign, scheduleEmailSending, scheduleInitialEmails } from "../utils/emailsScheduling.js";
 
 const getAllCampaigns = async (req, res) => {
@@ -67,58 +67,32 @@ const getAllCampaigns = async (req, res) => {
 
 const getIdvCampaigns = async (req, res) => {
   try {
-    const { id } = req.user;
+    // const { id } = req.user;
     const { id: campaignId } = req.params
 
-    const idvCampaign = await db
-      .select({
-        // Campaign fields
-        id: campaigns.id,
-        name: campaigns.name,
-        status: campaigns.status,
-        createdAt: campaigns.createdAt,
-        automationFlowEditorData: campaigns.automationFlowEditorData,
-        // Email account fields
-        emailAccount: {
-          id: emailAccounts.id,
-          emailId: emailAccounts.emailId,
-          status: emailAccounts.status,
+    const result = await db.query.campaigns.findMany({
+      where: eq(campaigns.id, campaignId),
+      with: {
+        emailAccount: true,
+        campaignContacts: {
+          with: {
+            user: true
+          }
+        },
+        emails: {
+          with: {
+            template: true,
+            emailConditions: true,
+            emailQueue: true,
+            emailSendQueue: true
+          }
         }
-      })
-      .from(campaigns)
-      .leftJoin(
-        emailAccounts,
-        eq(emailAccounts.id, campaigns.emailAccountsId)
-      )
-      .where(eq(campaigns.userId, id))
-      .where(eq(campaigns.id, campaignId))
-
-    // Then, for each campaign, get its contacts
-    const idvCampaignsWithContacts = await Promise.all(
-      idvCampaign.map(async (campaign) => {
-        const campaignContacts = await db
-          .select({
-            id: contacts.id,
-            name: contacts.name,
-            email: contacts.email
-          })
-          .from(campaignContact)
-          .leftJoin(
-            contacts,
-            eq(contacts.id, campaignContact.contactId)
-          )
-          .where(eq(campaignContact.campaignId, campaign.id));
-
-        return {
-          ...campaign,
-          contacts: campaignContacts
-        };
-      })
-    );
+      }
+    });
 
     return res
       .status(200)
-      .json({ message: 'List of all campaigns.', data: idvCampaignsWithContacts[0] || {} });
+      .json({ message: 'List of all campaigns.', data: result[0] || {} });
 
 
   } catch (error) {

@@ -83,11 +83,21 @@ const getIdvCampaigns = async (req, res) => {
           with: {
             template: true,
             emailConditions: true,
-            emailQueue: true,
-            emailSendQueue: true
+            emailQueue: {
+              with: {
+                contact: true  // Include contact details for queued emails
+              }
+            },
+            emailSendQueue: {
+              with: {
+                contact: true  // Include contact details for emails in send queue
+              }
+            }
           }
         }
       }
+      // emailQueue: true,
+      // emailSendQueue: true
     });
 
     return res

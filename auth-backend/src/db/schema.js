@@ -89,16 +89,6 @@ export const emails = pgTable('emails', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-export const emailQueue = pgTable('email_queue', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  contactId: uuid('contact_id').notNull().references(() => contacts.id),
-  emailId: uuid('email_id').notNull().references(() => emails.id),
-  scheduledTime: timestamp('scheduled_time').notNull(),
-  status: text('status').notNull(), // pending
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-});
-
 export const emailConditions = pgTable('email_conditions', {
   id: uuid('id').defaultRandom().primaryKey(),
   emailId: uuid('email_id').notNull().references(() => emails.id),
@@ -107,6 +97,16 @@ export const emailConditions = pgTable('email_conditions', {
   falseEmailId: uuid('false_email_id').references(() => emails.id),
   trueDelayHours: integer('true_delay_hours'),
   falseDelayHours: integer('false_delay_hours'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const emailQueue = pgTable('email_queue', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  contactId: uuid('contact_id').notNull().references(() => contacts.id),
+  emailId: uuid('email_id').notNull().references(() => emails.id),
+  scheduledTime: timestamp('scheduled_time').notNull(),
+  status: text('status').notNull(), // pending
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
@@ -168,7 +168,10 @@ export const campaignsRelations = relations(campaigns, ({ one, many }) => ({
     references: [emailAccounts.id],
   }),
   emails: many(emails),
-  campaignContacts: many(campaignContact)
+  campaignContacts: many(campaignContact),
+  // emailQueue: many(emailQueue),
+  // emailSendQueue: many(emailSendQueue),
+  // emailOpens: many(emailOpens)
 }));
 
 export const campaignContactRelations = relations(campaignContact, ({ one }) => ({
@@ -264,3 +267,5 @@ export const emailOpensRelations = relations(emailOpens, ({ one }) => ({
     references: [emails.id],
   })
 }));
+
+// create relations for campaign -> mails -> emailQueue , emailSendQueue, emailOpensRelations

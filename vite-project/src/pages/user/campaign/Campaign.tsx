@@ -48,9 +48,9 @@ const Campaign: React.FC = () => {
       content: (data: CampaignType) => {
         const modData = data?.campaignContacts.map((c) => {
           const container = {} as ContactsTypeDTO;
-          container["id"] = c.id;
-          container["name"] = c.user.name;
-          container["email"] = c.user.email;
+          container["id"] = c.contact.id;
+          container["name"] = c.contact.name;
+          container["email"] = c.contact.email;
 
           return container;
         });

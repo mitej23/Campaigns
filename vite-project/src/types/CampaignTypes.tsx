@@ -33,7 +33,7 @@ export interface CampaignContact {
   userId: string;
   createdAt: string;
   updatedAt: string;
-  user: User;
+  contact: User;
 }
 
 export interface EmailTemplate {

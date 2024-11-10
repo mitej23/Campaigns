@@ -76,7 +76,7 @@ const getIdvCampaigns = async (req, res) => {
         emailAccount: true,
         campaignContacts: {
           with: {
-            user: true
+            contact: true
           }
         },
         emails: {

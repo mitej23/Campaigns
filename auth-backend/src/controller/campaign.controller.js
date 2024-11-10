@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../db/index.js";
-import { campaignContact, campaigns, contacts, emailAccounts, emailConditions, emails, emailTemplates } from "../db/schema.js";
+import { campaignContact, campaigns, contacts, emailAccounts, emailConditions, emailQueue, emails, emailTemplates } from "../db/schema.js";
 import { createEmailSequence, getContactsForCampaign, scheduleEmailSending, scheduleInitialEmails } from "../utils/emailsScheduling.js";
 
 const getAllCampaigns = async (req, res) => {
@@ -84,8 +84,10 @@ const getIdvCampaigns = async (req, res) => {
             template: true,
             emailConditions: true,
             emailQueue: {
+              where: eq(emailQueue.status, 'pending'), // Add status filter if needed
+              orderBy: (emailQueue, { asc }) => [asc(emailQueue.scheduledTime)],
               with: {
-                contact: true  // Include contact details for queued emails
+                contact: true
               }
             },
             emailSendQueue: {

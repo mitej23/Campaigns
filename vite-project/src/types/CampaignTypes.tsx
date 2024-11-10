@@ -17,6 +17,15 @@ export interface User {
   updatedAt: string;
 }
 
+export interface Contact {
+  id: string;
+  name: string;
+  email: string;
+  usersId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CampaignContact {
   id: string;
   contactId: string;
@@ -41,8 +50,8 @@ export interface EmailCondition {
   id: string;
   emailId: string;
   conditionType: string;
-  trueEmailId: string;
-  falseEmailId: string;
+  trueEmailId: string | null;
+  falseEmailId: string | null;
   trueDelayHours: number | null;
   falseDelayHours: number | null;
   createdAt: string;
@@ -55,6 +64,7 @@ export interface EmailQueue {
   emailId: string;
   scheduledTime: string;
   status: string;
+  contact: Contact;
   createdAt: string;
   updatedAt: string;
 }
@@ -65,6 +75,7 @@ export interface EmailSendQueue {
   emailId: string;
   sendTime: string;
   status: string;
+  contact: Contact;
   createdAt: string;
   updatedAt: string;
 }
@@ -84,11 +95,68 @@ export interface Email {
   emailSendQueue: EmailSendQueue[];
 }
 
+// Node types for automation flow editor
+export interface NodePosition {
+  x: number;
+  y: number;
+}
+
+export interface NodeMeasured {
+  width: number;
+  height: number;
+}
+
+export interface NodeData {
+  label: string;
+  connected?: boolean;
+  time?: string;
+  format?: string;
+  templateId?: string;
+}
+
+export interface Node {
+  id: string;
+  type: string;
+  position: NodePosition;
+  data: NodeData;
+  measured?: NodeMeasured;
+  selected?: boolean;
+  dragging?: boolean;
+  targetPosition?: string;
+  sourcePosition?: string;
+  anchorPoint?: {
+    x: number;
+    y: number;
+  };
+}
+
+export interface Edge {
+  source: string;
+  target: string;
+  type: string;
+  style: {
+    strokeWidth: number;
+    stroke: string;
+  };
+  id: string;
+  sourceHandle?: string;
+}
+
+export interface AutomationFlowEditorData {
+  nodes: Node[];
+  edges: Edge[];
+  viewport: {
+    x: number;
+    y: number;
+    zoom: number;
+  };
+}
+
 export interface Campaign {
   id: string;
   name: string;
   status: string;
-  automationFlowEditorData: string;
+  automationFlowEditorData: string; // This is a JSON string that should be parsed to AutomationFlowEditorData
   userId: string;
   emailAccountsId: string;
   createdAt: string;
@@ -96,4 +164,10 @@ export interface Campaign {
   emailAccount: EmailAccount;
   campaignContacts: CampaignContact[];
   emails: Email[];
+}
+
+// Helper type for parsing automation flow editor data
+export interface CampaignWithParsedFlow
+  extends Omit<Campaign, "automationFlowEditorData"> {
+  automationFlowEditorData: AutomationFlowEditorData;
 }

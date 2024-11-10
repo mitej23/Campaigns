@@ -80,25 +80,54 @@ const CampaignEmails: React.FC<{ id: string | undefined; emails: Email[] }> = ({
         {/* Queue Tab */}
         <TabsContent value="queue">
           <div className="space-y-4">
-            {emails.map((email) =>
-              email.emailQueue.map((queueItem) => (
-                <div key={queueItem.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-medium">{queueItem.contact.name}</h3>
-                      <p className="text-sm text-gray-500">
-                        {queueItem.contact.email}
-                      </p>
+            {!emails.some((email) => email.emailQueue.length > 0) ? (
+              <p className="text-center text-gray-500 mt-24">
+                No emails currently in email queue
+              </p>
+            ) : (
+              <>
+                {emails.map((email) => {
+                  return (
+                    <div className="flex flex-col space-y-2 p-2 border rounded-md">
+                      <div className="px-2 py-3">
+                        <h3 className="font-medium">
+                          Email: {email.template.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Subject: {email.template.subject}
+                        </p>
+                      </div>
+                      {email.emailQueue.map((queueItem) => (
+                        <div
+                          key={queueItem.id}
+                          className="border rounded-lg p-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h3 className="font-medium">
+                                {queueItem.contact.name}
+                              </h3>
+                              <p className="text-sm text-gray-500">
+                                {queueItem.contact.email}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm font-medium">Scheduled</p>
+                              <p className="text-sm text-gray-500">
+                                {getDateString(queueItem.scheduledTime)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {email.emailQueue.length == 0 && (
+                        <p className="text-center py-6 text-sm text-gray-500">
+                          No emails in the queue for this template
+                        </p>
+                      )}
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">Scheduled</p>
-                      <p className="text-sm text-gray-500">
-                        {getDateString(queueItem.scheduledTime)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))
+                  );
+                })}
+              </>
             )}
           </div>
         </TabsContent>
@@ -106,30 +135,54 @@ const CampaignEmails: React.FC<{ id: string | undefined; emails: Email[] }> = ({
         {/* Send Queue Tab */}
         <TabsContent value="send">
           <div className="space-y-4">
-            {emails.map((email) =>
-              email.emailSendQueue.map((sendItem) => (
-                <div key={sendItem.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-medium">{sendItem.contact.name}</h3>
-                      <p className="text-sm text-gray-500">
-                        {sendItem.contact.email}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">Send Time</p>
-                      <p className="text-sm text-gray-500">
-                        {getDateString(sendItem.sendTime)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-            {!emails.some((email) => email.emailSendQueue.length > 0) && (
+            {!emails.some((email) => email.emailSendQueue.length > 0) ? (
               <p className="text-center text-gray-500 mt-24">
                 No emails currently in send queue
               </p>
+            ) : (
+              <>
+                {emails.map((email) => {
+                  return (
+                    <div className="flex flex-col space-y-2 p-2 border rounded-md">
+                      <div className="px-2 py-3">
+                        <h3 className="font-medium">
+                          Email: {email.template.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Subject: {email.template.subject}
+                        </p>
+                      </div>
+                      {email.emailSendQueue.map((sendItem) => (
+                        <div
+                          key={sendItem.id}
+                          className="border rounded-lg p-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h3 className="font-medium">
+                                {sendItem.contact.name}
+                              </h3>
+                              <p className="text-sm text-gray-500">
+                                {sendItem.contact.email}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm font-medium">Send Time</p>
+                              <p className="text-sm text-gray-500">
+                                {getDateString(sendItem.sendTime)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {email.emailSendQueue.length == 0 && (
+                        <p className="text-center py-6 text-sm text-gray-500">
+                          No emails in the queue for this template
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </>
             )}
           </div>
         </TabsContent>

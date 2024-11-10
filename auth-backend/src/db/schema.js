@@ -132,6 +132,27 @@ export const emailOpens = pgTable('email_opens', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+export const sentEmails = pgTable('sent_emails', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  campaignId: uuid('campaign_id').notNull().references(() => campaigns.id),
+  emailId: uuid('email_id').notNull().references(() => emails.id),
+  contactId: uuid('contact_id').notNull().references(() => contacts.id),
+  fromEmail: varchar('from_email', 255).notNull(),
+  toEmail: varchar('to_email', 255).notNull(),
+  subject: text('subject').notNull(),
+  processedContent: text('processed_content').notNull(),
+  sentAt: timestamp('sent_at').defaultNow(),
+  status: text('status').notNull(), // 'sent' | 'failed'
+  failureReason: text('failure_reason'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => {
+  return {
+    campaignContactIdx: uniqueIndex('campaign_contact_idx').on(table.campaignId, table.contactId, table.emailId),
+  }
+});
+
 // Relations
 
 import { relations } from 'drizzle-orm';
@@ -268,4 +289,17 @@ export const emailOpensRelations = relations(emailOpens, ({ one }) => ({
   })
 }));
 
-// create relations for campaign -> mails -> emailQueue , emailSendQueue, emailOpensRelations
+export const sentEmailsRelations = relations(sentEmails, ({ one }) => ({
+  campaign: one(campaigns, {
+    fields: [sentEmails.campaignId],
+    references: [campaigns.id],
+  }),
+  contact: one(contacts, {
+    fields: [sentEmails.contactId],
+    references: [contacts.id],
+  }),
+  originalEmail: one(emails, {
+    fields: [sentEmails.emailId],
+    references: [emails.id],
+  })
+}));

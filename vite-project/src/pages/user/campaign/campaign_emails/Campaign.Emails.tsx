@@ -21,6 +21,15 @@ const tabs = [
   },
 ];
 
+const getDateString = (date: string) => {
+  const tDate = new Date(date);
+  return `${tDate.getDate()}/${tDate.getMonth() + 1}/${tDate.getFullYear()} @ ${
+    tDate.getHours() > 10 ? tDate.getHours() % 12 : "0" + tDate.getHours()
+  }:${
+    tDate.getMinutes() > 10 ? tDate.getMinutes() : "0" + tDate.getMinutes()
+  } ${tDate.getHours() > 11 ? "pm" : "am"}`;
+};
+
 const CampaignEmails: React.FC<{ id: string | undefined; emails: Email[] }> = ({
   emails,
 }) => {
@@ -84,7 +93,7 @@ const CampaignEmails: React.FC<{ id: string | undefined; emails: Email[] }> = ({
                     <div className="text-right">
                       <p className="text-sm font-medium">Scheduled</p>
                       <p className="text-sm text-gray-500">
-                        {new Date(queueItem.scheduledTime).toLocaleString()}
+                        {getDateString(queueItem.scheduledTime)}
                       </p>
                     </div>
                   </div>
@@ -110,7 +119,7 @@ const CampaignEmails: React.FC<{ id: string | undefined; emails: Email[] }> = ({
                     <div className="text-right">
                       <p className="text-sm font-medium">Send Time</p>
                       <p className="text-sm text-gray-500">
-                        {new Date(sendItem.sendTime).toLocaleString()}
+                        {getDateString(sendItem.sendTime)}
                       </p>
                     </div>
                   </div>

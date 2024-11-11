@@ -65,8 +65,8 @@ app.get('/tracking/:trackingId', async (req, res) => {
 });
 
 // Start the cron jobs
-// setupEmailQueueCron();
-// setupEmailSendQueueCron()
+setupEmailQueueCron();
+setupEmailSendQueueCron()
 
 
 

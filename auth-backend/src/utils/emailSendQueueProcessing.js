@@ -242,7 +242,7 @@ async function processPendingEmails() {
 // Run the cron job every minute
 export function setupEmailSendQueueCron() {
 	// Process email queue every minute
-	cron.schedule('*/5 * * * * *', async () => {
+	cron.schedule('* * * * *', async () => {
 		console.info('Starting email send queue processing', {
 			timestamp: new Date().toISOString()
 		});

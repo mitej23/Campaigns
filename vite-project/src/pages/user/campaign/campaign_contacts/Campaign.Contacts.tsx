@@ -9,13 +9,30 @@ type Contact = {
   name: string;
   email: string;
 };
-const DataEmptyComponent = () => {
+const DataEmptyComponent: React.FC<{ campaignId: string }> = ({
+  campaignId,
+}) => {
+  const { setOpen } = useModal();
   return (
     <div className="flex h-[20rem] flex-col items-center justify-center">
       <h1 className="text-xl font-semibold">Oops !!! No Contact Found.</h1>
       <p className="text-sm text-slate-600 my-2 mb-4">
         Press the "Add Contacts" button to create your first account
       </p>
+      <Button
+        size={"sm"}
+        type="submit"
+        className="w-max"
+        onClick={() =>
+          setOpen(
+            <AddContactsToCampaign
+              id={campaignId}
+              disableRowWithThisData={[]}
+            />
+          )
+        }>
+        Add Contacts
+      </Button>
     </div>
   );
 };
@@ -52,7 +69,9 @@ const CampaignContacts = ({
           </Button>
         }
         filterPlaceholder="Filter Contacts..."
-        DataEmptyComponent={DataEmptyComponent}
+        DataEmptyComponent={() => (
+          <DataEmptyComponent campaignId={campaignId} />
+        )}
       />
     </div>
   );

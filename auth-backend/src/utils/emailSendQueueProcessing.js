@@ -11,6 +11,8 @@ import {
 } from '../db/schema.js';
 import { db } from '../db/index.js';
 import { v4 as uuidv4 } from "uuid";
+import { createSendEmailCommand } from './sendEmail.js';
+import { sesClient } from './sesClient.js';
 
 
 export class EmailQueueProcessor {
@@ -151,28 +153,41 @@ export class EmailQueueProcessor {
 async function handleSendEmail(email) {
 	try {
 		// Your email sending logic here
-		// await sendEmail(email);
+		const sendEmailCommand = createSendEmailCommand(
+			email.to,
+			email.from,
+			email.subject,
+			email.content
+		);
 
-		// Update sent email record
-		await db
-			.update(sentEmails)
-			.set({
-				status: 'sent',
-				updatedAt: new Date()
-			})
-			.where(eq(sentEmails.id, email.id));
+		try {
+			await sesClient.send(sendEmailCommand);
+			await db
+				.update(sentEmails)
+				.set({
+					status: 'sent',
+					updatedAt: new Date()
+				})
+				.where(eq(sentEmails.id, email.id));
 
-		// Update queue status
-		await db
-			.update(emailSendQueue)
-			.set({ status: 'completed' })
-			.where(
-				and(
-					eq(emailSendQueue.emailId, email.emailId),
-					eq(emailSendQueue.contactId, email.contactId)
-				)
-			);
+			// Update queue status
+			await db
+				.update(emailSendQueue)
+				.set({ status: 'completed' })
+				.where(eq(emailSendQueue.id, email.queueId));
+		} catch (caught) {
+			console.log(caught)
+			if (caught instanceof Error && caught.name === "MessageRejected") {
+				/** @type { import('@aws-sdk/client-ses').MessageRejected} */
+				const messageRejectedError = caught;
+				res.json({ "error": messageRejectedError })
+				return messageRejectedError;
+			}
+			throw caught;
+		}
+
 	} catch (error) {
+		console.log(error)
 		// Update sent email status with failure
 		await db
 			.update(sentEmails)
@@ -201,20 +216,21 @@ const processor = new EmailQueueProcessor('http://localhost:3000');
 // In your cron job:
 async function processPendingEmails() {
 	const processedEmails = await processor.processEmailQueue();
-
+	console.log("Email send queue processing: " + processedEmails.length)
 
 	for (const email of processedEmails) {
 		try {
-			// 	// Your email sending logic here
-			// 	// await sendEmail(email);
+			// Your email sending logic here
+			await handleSendEmail(email);
 
-			// 	// Update status to sent
+			// Update status to sent
 			await db
 				.update(emailSendQueue)
 				.set({ status: 'sent' })
 				.where(eq(emailSendQueue.id, email.queueId));
 		} catch (error) {
 			// Handle error and update status to failed
+			console.log(error)
 			await db
 				.update(emailSendQueue)
 				.set({ status: 'failed' })

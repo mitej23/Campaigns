@@ -1,8 +1,6 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
-import { v4 as uuidv4 } from "uuid";
-
 const app = express()
 app.set("trust proxy", true)
 app.use(cors({
@@ -25,6 +23,9 @@ import emailTemplateRoutes from "./routes/email_template.routes.js"
 import contactsRoutes from "./routes/contacts.routes.js"
 import { setupEmailQueueCron } from "./utils/emailQueueProcessing.js"
 import { setupEmailSendQueueCron } from "./utils/emailSendQueueProcessing.js";
+import { db } from "./db/index.js"
+import { emailOpens } from "./db/schema.js"
+
 
 app.use("/api/users", userRoutes)
 app.use("/api/user-email-accounts", emailAccountRoutes)
@@ -32,32 +33,41 @@ app.use("/api/campaigns", campaignRoutes)
 app.use("/api/email-template", emailTemplateRoutes)
 app.use("/api/contacts", contactsRoutes)
 app.get('/tracking/:trackingId', async (req, res) => {
+  //eg:  824d850c-03e0-43ab-a105-2de1c82e7ac4-5d42a1d6-40b2-4a7f-845c-eba0347d4304
   const { trackingId } = req.params;
+  // first part contactId and secondpart emails table id
+  const segments = trackingId.split('-');
+  const reconstructedContactId = segments.slice(0, 5).join('-');
+  const reconstructedEmailId = segments.slice(5).join('-');
+  try {
+    await db.insert(emailOpens).values({
+      contactId: reconstructedContactId,
+      emailId: reconstructedEmailId,
+      openedAt: new Date()
+    });
+    console.log()
+  } catch (error) {
+    if (error.code) {
+      console.log("email already opened")
+    } else {
+      console.log(error)
+    }
+  }
 
-  await db.insert(emailOpens).values({
-    id: uuidv4(),
-    trackingId,
-    // You'll need to look up the contactId and emailId based on the trackingId
-    // Consider adding a separate tracking table to store this mapping
-  });
-
-  // Return a 1x1 transparent GIF
   res.writeHead(200, {
     'Content-Type': 'image/gif',
-    'Cache-Control': 'no-store'
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   });
   res.end(Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'));
+
 });
 
 // Start the cron jobs
 // setupEmailQueueCron();
 // setupEmailSendQueueCron()
 
-// // Handle application shutdown
-// process.on('SIGTERM', () => {
-//   shutdownEmailQueueCron();
-//   // Other cleanup code...
-// });
 
 
 export { app }

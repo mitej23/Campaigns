@@ -130,6 +130,10 @@ export const emailOpens = pgTable('email_opens', {
   openedAt: timestamp('opened_at').defaultNow(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => {
+  return {
+    userNameIdx: uniqueIndex('email_opens_idx').on(table.contactId, table.emailId),
+  }
 });
 
 export const sentEmails = pgTable('sent_emails', {

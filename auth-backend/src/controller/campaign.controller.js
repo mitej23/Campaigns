@@ -300,7 +300,7 @@ const addSomeContacts = async (req, res) => {
     const { contactIds, campaignId } = req.body
     const { id } = req.user;
 
-    const campaignContacts = await db.transaction(async (trx) => {
+    await db.transaction(async (trx) => {
       const insertPromises = contactIds.map(contactId =>
         trx.insert(campaignContact).values({
           contactId,
@@ -312,9 +312,20 @@ const addSomeContacts = async (req, res) => {
       return await Promise.all(insertPromises);
     });
 
+    const campaign = await db.query.campaigns.findFirst({
+      where: eq(campaigns.id, campaignId),
+      with: {
+        emails: true
+      }
+    })
+
+    // if the campaign is already published then add first email to queue for these new users.
+    if (campaign.status === "Published") {
+      await scheduleInitialEmails(campaign.emails, campaignId, contactIds);
+    }
+
     return res.status(201).json({
       message: `Successfully added ${contactIds.length} contacts to campaign`,
-      campaignContacts
     });
 
   } catch (error) {

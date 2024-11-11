@@ -177,10 +177,7 @@ async function handleSendEmail(email) {
 				.where(eq(emailSendQueue.id, email.queueId));
 		} catch (caught) {
 			console.log(caught)
-			if (caught instanceof Error && caught.name === "MessageRejected") {
-				/** @type { import('@aws-sdk/client-ses').MessageRejected} */
-				const messageRejectedError = caught;
-				res.json({ "error": messageRejectedError })
+			if (caught && caught.name === "MessageRejected") {
 				return messageRejectedError;
 			}
 			throw caught;

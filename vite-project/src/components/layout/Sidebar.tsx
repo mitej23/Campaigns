@@ -1,4 +1,4 @@
-import { AtSign, LayoutDashboard, Mails, User } from "lucide-react";
+import { AtSign, LayoutDashboard, Mails, Send, User } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,6 +7,12 @@ import { useAuth } from "@/hooks/useAuth";
 const Sidebar = () => {
   const { logout } = useAuth();
   const links = [
+    {
+      id: 0,
+      name: "Sent",
+      path: "/emails",
+      icon: <Send size={20} className="mr-4 h-4 w-4" />,
+    },
     {
       id: 1,
       name: "Dasboard",

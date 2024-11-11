@@ -17,3 +17,12 @@ export function debounce<T extends (...args: any[]) => void>(
   };
 }
 
+export const getDateString = (date: string) => {
+  const tDate = new Date(date);
+  return `${tDate.getDate()}/${tDate.getMonth() + 1}/${tDate.getFullYear()} @ ${
+    tDate.getHours() > 9 ? tDate.getHours() % 12 : "0" + tDate.getHours()
+  }:${tDate.getMinutes() > 9 ? tDate.getMinutes() : "0" + tDate.getMinutes()} ${
+    tDate.getHours() > 11 ? "pm" : "am"
+  }`;
+};
+

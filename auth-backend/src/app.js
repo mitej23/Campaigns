@@ -25,6 +25,8 @@ import { setupEmailQueueCron } from "./utils/emailQueueProcessing.js"
 import { setupEmailSendQueueCron } from "./utils/emailSendQueueProcessing.js";
 import { db } from "./db/index.js"
 import { emailOpens } from "./db/schema.js"
+import getEmailsSent from "./utils/getEmailsSent.js"
+import { verifyJWT } from "./middleware/auth.middleware.js"
 
 
 app.use("/api/users", userRoutes)
@@ -32,6 +34,7 @@ app.use("/api/user-email-accounts", emailAccountRoutes)
 app.use("/api/campaigns", campaignRoutes)
 app.use("/api/email-template", emailTemplateRoutes)
 app.use("/api/contacts", contactsRoutes)
+app.get("/api/emails", verifyJWT, getEmailsSent)
 app.get('/tracking/:trackingId', async (req, res) => {
   //eg:  824d850c-03e0-43ab-a105-2de1c82e7ac4-5d42a1d6-40b2-4a7f-845c-eba0347d4304
   const { trackingId } = req.params;

@@ -2,6 +2,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Email } from "@/types/CampaignTypes";
 import { Clock, Mail, Send } from "lucide-react";
 import EmailTreeView from "./EmailTreeView";
+import { getDateString } from "@/lib/utils";
 
 const tabs = [
   {
@@ -20,15 +21,6 @@ const tabs = [
     icon: <Send size={14} />,
   },
 ];
-
-const getDateString = (date: string) => {
-  const tDate = new Date(date);
-  return `${tDate.getDate()}/${tDate.getMonth() + 1}/${tDate.getFullYear()} @ ${
-    tDate.getHours() > 10 ? tDate.getHours() % 12 : "0" + tDate.getHours()
-  }:${
-    tDate.getMinutes() > 10 ? tDate.getMinutes() : "0" + tDate.getMinutes()
-  } ${tDate.getHours() > 11 ? "pm" : "am"}`;
-};
 
 const CampaignEmails: React.FC<{ id: string | undefined; emails: Email[] }> = ({
   emails,

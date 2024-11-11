@@ -25,6 +25,7 @@ import UpdateEmailTemplate from "./pages/user/email_template/UpdateEmailTemplate
 import Dashboard from "./pages/user/campaign/CampaignList";
 import AutomationBuilderEditor from "./pages/user/campaign/campaign_automation/AutomationBuilder.Page";
 import { ReactFlowProvider } from "@xyflow/react";
+import Emails from "./pages/user/emails/Emails";
 
 export const UNAUTHORIZED_EVENT = "unauthorized_error";
 const handleError = (error: any) => {
@@ -63,6 +64,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<h1>Landing Page</h1>} />
                   <Route element={<ProtectedRoutes />}>
+                    <Route path="/emails" element={<Emails />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route
                       path="/dashboard/:id"

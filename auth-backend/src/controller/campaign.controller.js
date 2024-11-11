@@ -67,7 +67,7 @@ const getAllCampaigns = async (req, res) => {
 
 const getIdvCampaigns = async (req, res) => {
   try {
-    // const { id } = req.user;
+    // 
     const { id: campaignId } = req.params
 
     const result = await db.query.campaigns.findMany({

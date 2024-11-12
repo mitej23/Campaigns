@@ -37,7 +37,7 @@ const Accounts = () => {
       </div>
       <DataTable
         columns={columns}
-        data={data?.accounts}
+        data={data?.accounts || []}
         loading={isPending}
         filterPlaceholder="Filter Accounts..."
         DataEmptyComponent={DataEmptyComponent}

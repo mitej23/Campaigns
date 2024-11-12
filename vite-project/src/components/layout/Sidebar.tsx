@@ -3,8 +3,11 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import usePostQuery from "@/hooks/usePostQuery";
+import { queryClient } from "@/App";
 
 const Sidebar = () => {
+  const { mutate } = usePostQuery("/api/users/logout");
   const { logout } = useAuth();
   const navigate = useNavigate();
   const links = [
@@ -41,7 +44,15 @@ const Sidebar = () => {
   ];
 
   const handleLogout = () => {
-    logout();
+    mutate(
+      {},
+      {
+        onSuccess: () => {
+          queryClient.clear();
+          logout();
+        },
+      }
+    );
   };
 
   return (

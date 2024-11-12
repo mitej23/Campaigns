@@ -1,11 +1,12 @@
 import { AtSign, LayoutDashboard, Mails, Send, User } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 
 const Sidebar = () => {
   const { logout } = useAuth();
+  const navigate = useNavigate();
   const links = [
     {
       id: 0,
@@ -45,7 +46,11 @@ const Sidebar = () => {
 
   return (
     <div className="flex flex-col bg-gray-50 h-screen w-[220px] border-r fixed">
-      <h1 className="text-3xl font-semibold text-center mt-8">Campaigns</h1>
+      <h1
+        className="text-3xl font-semibold text-center mt-8 hover:cursor-pointer"
+        onClick={() => navigate("/")}>
+        Campaigns
+      </h1>
       <div className="flex flex-col mt-8 gap-1 flex-1 mb-4">
         {links.map(({ id, name, path, icon }) => {
           return (

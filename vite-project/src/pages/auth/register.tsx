@@ -15,6 +15,18 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import usePostQuery from "@/hooks/usePostQuery";
 import { useAuth } from "@/hooks/useAuth";
+import { motion } from "framer-motion";
+
+const buttonVariants = {
+  hover: {
+    scale: 1.05,
+    transition: {
+      type: "spring",
+      damping: 10,
+      stiffness: 400,
+    },
+  },
+};
 
 const Register = () => {
   const { login } = useAuth();
@@ -91,17 +103,22 @@ const Register = () => {
               onChange={onhandleInputChange}
             />
           </div>
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isPending}
-            onClick={onhandleRegsiter}>
-            {isPending ? (
-              <Loader className="animate-spin" size={20} />
-            ) : (
-              "Register"
-            )}
-          </Button>
+          <motion.div
+            variants={buttonVariants}
+            whileHover="hover"
+            className="mt-5">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isPending}
+              onClick={onhandleRegsiter}>
+              {isPending ? (
+                <Loader className="animate-spin" size={20} />
+              ) : (
+                "Register"
+              )}
+            </Button>
+          </motion.div>
           {isError && (
             <p className="text-red-400 text-sm font-semibold">
               * {error?.message}

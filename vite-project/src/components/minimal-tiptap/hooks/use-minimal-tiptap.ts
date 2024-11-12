@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@tiptap/react";
 import type { Content, UseEditorOptions } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { useEditor } from "@tiptap/react";
@@ -144,7 +144,6 @@ export const useMinimalTiptapEditor = ({
   onBlur,
   ...props
 }: UseMinimalTiptapEditorProps) => {
-  const previousValueRef = React.useRef(value);
   const throttledSetValue = useThrottle(
     (value: Content) => onUpdate?.(value),
     throttleDelay
@@ -184,14 +183,6 @@ export const useMinimalTiptapEditor = ({
     onBlur: ({ editor }) => handleBlur(editor),
     ...props,
   });
-
-  // Update content when value changes
-  React.useEffect(() => {
-    if (editor && value !== undefined && value !== previousValueRef.current) {
-      editor.commands.setContent(value);
-      previousValueRef.current = value;
-    }
-  }, [editor, value]);
 
   return editor;
 };

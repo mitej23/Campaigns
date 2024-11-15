@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { contacts } from "../db/schema.js";
 import { db } from "../db/index.js";
 
@@ -39,8 +39,7 @@ const addContact = async (req, res) => {
 		const existingContact = await db
 			.select()
 			.from(contacts)
-			.where(eq(contacts.usersId, id))
-			.where(eq(contacts.email, email))
+			.where(and(eq(contacts.usersId, id), eq(contacts.email, email)))
 			.limit(1);
 
 		if (existingContact.length > 0) {

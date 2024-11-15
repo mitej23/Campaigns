@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { emailAccounts } from "../db/schema.js";
 import { GetIdentityVerificationAttributesCommand, VerifyEmailIdentityCommand } from "@aws-sdk/client-ses";
@@ -41,8 +41,7 @@ const addEmailAccount = async (req, res) => {
 		// Check if the email already exists for this user
 		const existingAccount = await db.select()
 			.from(emailAccounts)
-			.where(eq(emailAccounts.userId, id))
-			.where(eq(emailAccounts.emailId, emailId))
+			.where(and(eq(emailAccounts.userId, id), eq(emailAccounts.emailId, emailId)))
 			.limit(1);
 
 		if (existingAccount.length > 0) {

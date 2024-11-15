@@ -763,10 +763,13 @@ const EditorMainContainer: React.FC<{
               queryKey: ["campaign-details", campaignId],
             });
           },
-          onError: () => {
+          onError: (error) => {
+            console.log(error.message);
             toast({
               title: "Oops!! There was some issue while saving the flow",
-              description: "Please try again later..",
+              description: error?.message
+                ? error.message
+                : "Please try again later..",
             });
           },
         }

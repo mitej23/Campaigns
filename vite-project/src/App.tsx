@@ -10,7 +10,7 @@ import { AuthProvider } from "./hooks/useAuth";
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "./components/ui/toaster";
 import ProtectedRoutes from "./components/layout/ProtectedRoutes";
 import AuthRoutes from "./components/layout/AuthRoutes";
@@ -108,7 +108,7 @@ function App() {
           </Router>
         </TooltipProvider>
         <Toaster />
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </>
   );

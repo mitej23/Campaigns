@@ -155,8 +155,7 @@ const updateCampaign = async (req, res) => {
 
     const [updatedCampaign] = await db.update(campaigns)
       .set({ name })
-      .where(eq(campaigns.userId, id))
-      .where(eq(campaigns.id, campaignId))
+      .where(and(eq(campaigns.userId, id), eq(campaigns.id, campaignId)))
       .returning();
 
     if (!updatedCampaign) {
@@ -184,8 +183,7 @@ const saveEditor = async (req, res) => {
 
     const [updatedCampaign] = await db.update(campaigns)
       .set({ automationFlowEditorData })
-      .where(eq(campaigns.userId, id))
-      .where(eq(campaigns.id, campaignId))
+      .where(and(eq(campaigns.userId, id), eq(campaigns.id, campaignId)))
       .returning();
 
     if (!updatedCampaign) {
@@ -209,8 +207,7 @@ const publishCampaign = async (req, res) => {
 
     const [updatedCampaign] = await db.update(campaigns)
       .set({ automationFlowEditorData })
-      .where(eq(campaigns.userId, id))
-      .where(eq(campaigns.id, campaignId))
+      .where(and(eq(campaigns.userId, id), eq(campaigns.id, campaignId)))
       .returning();
 
     if (!updatedCampaign) {
@@ -232,14 +229,12 @@ const publishCampaign = async (req, res) => {
         emailAccounts,
         eq(emailAccounts.id, campaigns.emailAccountsId)
       )
-      .where(eq(campaigns.userId, id))
-      .where(eq(campaigns.id, campaignId))
+      .where(and(eq(campaigns.userId, id), eq(campaigns.id, campaignId)))
 
     // Check if already published
-    if (currentCampaign[0].status === 'published') {
-      return res.status(400).json({ error: 'Campaign is already published' });
+    if (currentCampaign[0].status === 'Published') {
+      return res.status(400).json({ message: 'Campaign is already published' });
     }
-
 
     if (currentCampaign[0].emailStatus != "Success") {
       return res.status(500).json({ message: 'Email Verification Pending. Go to your email client and find email from aws' });
@@ -256,13 +251,8 @@ const publishCampaign = async (req, res) => {
 
     await db.update(campaigns)
       .set({ status: 'Published' })
-      .where(eq(campaigns.userId, id))
-      .where(eq(campaigns.id, campaignId))
+      .where(and(eq(campaigns.userId, id), eq(campaigns.id, campaignId)))
       .returning();
-
-    // // Schedule the email sending process
-    // scheduleEmailSending( campaignId);
-    // });
 
 
     res.status(200).json({ message: 'Flow published successfully' });
